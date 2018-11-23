@@ -6,11 +6,14 @@
     <br>
     <router-link to="/delete">Delete group</router-link>
     <br>
-    -----------------------------------
     <!-- for loop. 展示所有groups里面的卡-->
     <div v-for="(groups,index) in groupsInDatabase"
         :key="index">
-        Group 1: {{ groups.id }}
+        -----------------------------------
+        <br>
+        Group {{ index + 1 }}: {{ groups.name }}
+        <br>
+        id: {{ groups.id }}
         <button v-on:click="set(groups)">Add members</button>
         <li v-for="(members,indx) in groups.members"
             :key="indx" >
