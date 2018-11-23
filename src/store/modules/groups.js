@@ -2,7 +2,8 @@ import { READ_GROUP,
   SET_GROUP,
   ADD_GROUP,
   DELETE_GROUP,
-  ADD_MEMBER} from '@/store/mutation-types'
+  ADD_MEMBER,
+  ADD_CARD } from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -18,7 +19,13 @@ const state = {
   // members
   newMember: {
     name: '',
-    id: ''
+    id: '',
+    cards: []
+  },
+  newCard: {
+    id: '',
+    name: '',
+    description: ''
   }
   // cards
 }
@@ -30,6 +37,9 @@ const getters = {
   },
   getNewGoup (state) {
     return state.newgroup
+  },
+  getNewCard (state) {
+    return state.newCard
   }
 }
 
@@ -77,6 +87,18 @@ const mutations = {
     updates[state.newMember.id] = state.newMember
     db.ref('/groups/' + payload[0] + '/members').update(updates)
   },
+  // 增加卡片，格式和增加member是一样的
+  [ADD_CARD] (state, payload) {
+    // 获取新组员名字.
+    state.newCard.name = payload[2].name
+    state.newCard.description = payload[2].description
+    // 将其push进该组，并用同样的方法获取member id
+    state.newCard.id = db.ref('/groups/' + payload[0] + '/members/' + payload[1] + '/cards').push(state.newCard).key
+    // 替换掉没有id的members
+    var updates = {}
+    updates[state.newCard.id] = state.newCard
+    db.ref('/groups/' + payload[0] + '/members/' + payload[1] + '/cards').update(updates)
+  },
 
 
 
@@ -108,6 +130,9 @@ const actions = {
   },
   setmember ({ commit }, payload) {
     commit(ADD_MEMBER, payload)
+  },
+  addcard ({ commit }, payload) {
+    commit(ADD_CARD, payload)
   }
 }
 

@@ -8,7 +8,10 @@ export const DELETE_GROUP = 'DELETE_GROUP'
 export const FIND_GROUP = 'FIND_GROUP'
 
 // For members
-export const ADD_MEMBER = 'SET_MEMBER'
-export const SAVE_MEMBER = 'ADD_MEMBER'
+export const ADD_MEMBER = 'ADD_MEMBER'
+export const SAVE_MEMBER = 'SAVE_MEMBER'
 export const DELETE_MEMBER = 'DELETE_MEMBER'
 export const FIND_MEMBER = 'FIND_MEMBER'
+
+// For cards
+export const ADD_CARD = 'ADD_CARD'
