@@ -34,14 +34,18 @@
 
           </li>
     </div>
+
+
     <!-- 增加成员时出现的面板 -->
     <v-dialog
     v-model="CurrentlyAddingMemberToOneGroup"
     max-width="1000px">
-        member name: <input type="text" v-model="name"><br>
+        member name: <input type="text" v-model="newMember.name"><br>
+        member uid: <input type="text" v-model="newMember.uid"><br>
         <button v-on:click="ok">OK</button>
         <button v-on:click="discard">Discard</button>
     </v-dialog>
+
 
     <!-- 增加卡片时出现的面板 -->
     <v-dialog
@@ -64,8 +68,11 @@ export default {
     return {
       // 当前用户的用户名
       user: '',
-      // 被增加的组员名
-      name: '',
+      // 被增加的组员
+      newMember: {
+        name: '',
+        uid: ''
+      },
       // 新增的卡片
       newCard: {
         name: '',
@@ -112,7 +119,7 @@ export default {
     ok: function() {
       // 将必须的信息传递到store里面去。这包括了group id和member name
       this.membersAndGroupToStore.push(this.currentGroup.id)
-      this.membersAndGroupToStore.push(this.name)
+      this.membersAndGroupToStore.push(this.newMember)
       this.$store.dispatch('setmember', this.membersAndGroupToStore)
       this.discard()
     },
@@ -120,7 +127,7 @@ export default {
     discard: function() {
       this.currentGroup = null
       this.CurrentlyAddingMemberToOneGroup = false
-      this.name = ''
+      this.newMember = { name:'', uid:'' }
       this.membersAndGroupToStore = []
     },
 

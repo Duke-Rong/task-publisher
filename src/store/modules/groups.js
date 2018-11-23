@@ -20,6 +20,7 @@ const state = {
   newMember: {
     name: '',
     id: '',
+    uid: '',
     cards: []
   },
   newCard: {
@@ -79,7 +80,8 @@ const mutations = {
   // 由Add传递。payload内含需要增加的组员和群id
   [ADD_MEMBER] (state, payload) {
     // 获取新组员名字.
-    state.newMember.name = payload[1]
+    state.newMember.name = payload[1].name
+    state.newMember.uid = payload[1].uid
     // 将其push进该组，并用同样的方法获取member id
     state.newMember.id = db.ref('/groups/' + payload[0] + '/members').push(state.newMember).key
     // 替换掉没有id的members
