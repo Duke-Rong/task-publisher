@@ -6,6 +6,11 @@ import groups from './modules/groups'
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
+  /*
+  state: {
+    user: ''
+  },
+  */
   modules: {
     groups
   }
