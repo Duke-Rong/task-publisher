@@ -4,6 +4,7 @@
 
 ## Build Setup
 
+下载下来之后运行如下命令：
 ``` bash
 # install dependencies
 npm install
