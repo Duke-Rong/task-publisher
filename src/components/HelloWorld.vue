@@ -1,13 +1,19 @@
 <template>
   <div>
-    Hello world!
-    <router-link to="/add">Add card</router-link>
-    <router-link to="/delete">Delete card</router-link>
+    Hello, {{ user.email }}
+    <br>
+    <router-link to="/add">Add group</router-link>
+    <br>
+    <router-link to="/delete">Delete group</router-link>
     <br>
     <!-- for loop. 展示所有groups里面的卡-->
     <div v-for="(groups,index) in groupsInDatabase"
         :key="index">
-        {{ groups.id }}
+        -----------------------------------
+        <br>
+        Group {{ index + 1 }}: {{ groups.name }}
+        <br>
+        id: {{ groups.id }}
         <button v-on:click="set(groups)">Add members</button>
         <li v-for="(members,indx) in groups.members"
             :key="indx" >
@@ -32,6 +38,8 @@ export default {
   // 包含了修改和显示groups的必要元素
   data() {
     return {
+      // 当前用户的用户名
+      user: '',
       // 被增加的组员名
       name: '',
       // 当前正在修改的组，由set()传递
@@ -53,6 +61,10 @@ export default {
         return newgroup
       })
     }
+  },
+  // 使用用户的email作为名字
+  activated() {
+    this.user = firebase.auth().currentUser
   },
   methods: {
     // 将组群绑定到currentGroup里，并打开修改页
