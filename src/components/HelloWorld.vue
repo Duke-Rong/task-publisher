@@ -63,7 +63,8 @@ export default {
     }
   },
   // 使用用户的email作为名字
-  activated() {
+  beforeUpdate() {
+    // this.user = this.$store.state.user
     this.user = firebase.auth().currentUser
   },
   methods: {

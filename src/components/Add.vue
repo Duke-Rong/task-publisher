@@ -1,8 +1,8 @@
 <template>
   <div>
-      <router-link to="/">Show cards</router-link>
-      <p>Add card</p>
-      card name :
+      <router-link to="/">Show groups</router-link>
+      <p>Add groups</p>
+      Group name :
       <input type="text" v-model="group.name"><br>
       <br>
       <button v-on:click="createGroup">create</button>
