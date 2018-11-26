@@ -13,13 +13,11 @@
         <div v-for="(members,indxxx) in groups.members"
              :key="indxxx"
              v-if="members.uid === user.uid">
-             {{ addGroupToGroupsCurrentlyShown(groups) }}
           -----------------------------------
           <br>
           <p>Group {{ index + 1 }}: {{ groups.name }}</p>
           <button v-on:click="changeVisibility(index)">收缩</button>
           <button v-on:click="set(groups)">Add members</button>
-          {{ index }}
             <div v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
               <li v-for="(members,indx) in groups.members"
@@ -31,7 +29,7 @@
         </div>
     </div>
 
-    <div v-show="shown">,</div>
+    <div v-show="commaShown">,</div>
     <!-- 增加成员时出现的面板 -->
     <v-dialog
     v-model="CurrentlyAddingMemberToOneGroup"
@@ -53,12 +51,9 @@ export default {
   // 包含了修改和显示groups的必要元素
   data() {
     return {
-      shown: false,
       // 当前用户的用户名
       user: '',
-      // 当前显示的groups以及他们是否呈打开趋势
-      // 注意！有可能并不需要这个currentGroups，若是不需则可以删除
-      groupsCurrentlyShown: [],
+      // groups是否呈打开趋势
       groupsExtendSwitch: [],
       // 被增加的组员
       newMember: {
@@ -81,7 +76,14 @@ export default {
       // 当增加members时传递到store里的内容
       membersAndGroupToStore: [],
       // 当增加cards时传递到store里的内容
-      cardsToStore: []
+      cardsToStore: [],
+      // 这其实是一个小心机
+      // 由于v-show groupsExtendSwitch不能直接更新页面
+      // 因此用它来更新页面。
+      // 这玩意v-show到一个逗号，每次change groupsExtendSwitch
+      // 他都会被改变值，使逗号出现/消失
+      // 以此来update页面，从而触发组员的shou
+      commaShown: false
     }
   },
   computed: {
@@ -92,6 +94,8 @@ export default {
         newgroup.name = group.name
         newgroup.id = group.id
         newgroup.members  = group.members
+        // 我们将group size的false存在这个array中
+        // 这个array决定了groups是否延伸
         this.groupsExtendSwitch[this.groupsExtendSwitch.length] = false
         return newgroup
       })
@@ -127,18 +131,10 @@ export default {
       this.newMember = { name:'', uid:'' }
       this.membersAndGroupToStore = []
     },
-    // template会将所show的groups一个个传递进来
-    // 该方程将他保存在一个array里
-    // 每塞一个进来，就在extendSwitch里塞一个false
-    // 因此两个array的size应该是一样的
-    // Groups的开关就按照extendSwitch来
-    // 每个group的开关对应eS[index]
-    addGroupToGroupsCurrentlyShown: function(payload) {
-      this.groupsCurrentlyShown[this.groupsCurrentlyShown.length] = payload
-    },
+    // 更改被点击的group的boolean值，使其延展/收起
     changeVisibility: function(payload) {
       this.groupsExtendSwitch[payload] = !this.groupsExtendSwitch[payload]
-      this.shown = !this.shown
+      this.commaShown = !this.commaShown
     }
   }
 }
