@@ -4,6 +4,7 @@ import { READ_GROUP,
   DELETE_GROUP,
   ADD_MEMBER,
   DELETE_MEMBER,
+  SET_CURRENT,
   ADD_CARD,
   SET_USER} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
@@ -63,12 +64,26 @@ const getters = {
   },
   getCurrentGroup (state) {
     return state.currentGroup
+  },
+  getCurrentMember (state) {
+    return state.currentMember
+  },
+  getCurrentCards (state) {
+    return state.currentCards
   }
 }
 
 const mutations = {
   [SET_USER] (state, payload) {
     state.currentUser = payload
+  },
+  // 设置当前该项目的用户
+  // call: 项目auth()加载后
+  // 一旦决定用户，在关闭整个项目之前是不会自动更新的
+  [SET_CURRENT] (state, payload) {
+    state.currentGroup = payload[0]
+    state.currentMember = payload[1]
+    state.currentCards = payload[1].cards
   },
   // 输入：groupID 输出：该group
   [READ_GROUP] (state, payload) {
@@ -119,6 +134,7 @@ const mutations = {
     updates[state.newMember.id] = state.newMember
     db.ref('/groups/' + payload[0].id + '/members').update(updates)
   },
+  // 传入：组id和member id
   [DELETE_MEMBER] (state, payload) {
     db.ref('/groups/' + payload[0] + '/members').child(payload[1]).remove()
   },
@@ -153,11 +169,14 @@ const actions = {
     // 若是我没有猜错，这个groups即State里面的groups，会与其同步
     bindFirebaseRef('groups', payload)
   }),
-  readgroup ({ commit }, payload) {
-    commit(READ_GROUP, payload)
-  },
   setuser ({ commit }, payload) {
     commit(SET_USER, payload)
+  },
+  setcurrent ({ commit }, payload) {
+    commit(SET_CURRENT, payload)
+  },
+  readgroup ({ commit }, payload) {
+    commit(READ_GROUP, payload)
   },
   // 将来应该还有设置卡片等等
   savegroup ({ commit }, payload) {
