@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import HelloWorld from '@/components/HelloWorld'
 const Auth = () => import(/* webpackChunkName: "Auth.vue" */'@/components/Auth.vue')
 const MainPage = () => import(/* webpackChunkName: "MainPage.vue" */'@/components/MainPage.vue')
 
@@ -12,15 +11,6 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      scrollToTop: true,
-      component: HelloWorld,
-      meta: {
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/mainpage',
       name: 'MainPage',
       scrollToTop: true,
       component: MainPage,
