@@ -16,6 +16,7 @@ const state = {
   // 这应该是整个数据库里有多少groups
 
   // 此处需要修改！仅读取uid与当前用户吻合的groups
+  // 需要clear!
 
   groups: [],
   // 当前本项目的使用者
@@ -87,19 +88,31 @@ const mutations = {
     state.newgroup.name = payload.name
     // 将该群组以没有id的形式推入firebase,并获取这个id
     state.newgroup.id = groupsDB.push(state.newgroup).key
+    var updates = {}
+    updates[state.newgroup.id] = state.newgroup
+    groupsDB.update(updates)
     // 这样一来，我们就获取了新的group,包含了完整的id和name
     // 将自己放进去
     state.newMember.name = state.currentUser.email
     state.newMember.uid = state.currentUser.uid
     state.newMember.id = db.ref('/groups/' + state.newgroup.id + '/members').push(state.newMember).key
+    console.log(updates)
     var updatess = {}
     updatess[state.newMember.id] = state.newMember
     db.ref('/groups/' + state.newgroup.id + '/members').update(updatess)
-    state.newgroup.members[state.newMember.id] = state.newMember
+    console.log(updatess)
+    /*
+    db.ref('/groups/' + state.newgroup.id + '/members').child(payload).once('value').then(function (snapshot) {
+      state.newgroup.members = snapshot.val()
+      console.log(state.newgroup.members)
+    })
+    */
     // 然后将这个完整的group再更新进firebase,替换掉原本没有id的group
+    /*
     var updates = {}
     updates[state.newgroup.id] = state.newgroup
     groupsDB.update(updates)
+    */
   },
   // 输入卡号，删除群组
   [DELETE_GROUP] (state, payload) {

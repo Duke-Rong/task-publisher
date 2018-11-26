@@ -124,14 +124,17 @@ export default {
     },
     ok: function() {
       this.$store.dispatch('setgroup', this.currentGroup)
+      const id = this.currentGroup.id
       this.discard()
+      // 重新从database抓取currentGroup
+      this.$store.dispatch('readgroup', id)
+      this.currentGroup = this.$store.getters.getCurrentGroup
     },
     // 修改组群并上传，然后清除痕迹
     addMember: function() {
       // 将必须的信息传递到store里面去。这包括了group name, group id和member name
       this.membersAndGroupToStore.push(this.currentGroup)
       this.membersAndGroupToStore.push(this.newMember)
-      console.log(this.currentGroup)
       this.$store.dispatch('setmember', this.membersAndGroupToStore)
       // 重新从database抓取currentGroup
       this.$store.dispatch('readgroup', this.currentGroup.id)
