@@ -87,6 +87,14 @@ const mutations = {
     // 将该群组以没有id的形式推入firebase,并获取这个id
     state.newgroup.id = groupsDB.push(state.newgroup).key
     // 这样一来，我们就获取了新的group,包含了完整的id和name
+    // 将自己放进去
+    state.newMember.name = state.currentUser.email
+    state.newMember.uid = state.currentUser.uid
+    state.newMember.id = db.ref('/groups/' + state.newgroup.id + '/members').push(state.newMember).key
+    var updatess = {}
+    updatess[state.newMember.id] = state.newMember
+    db.ref('/groups/' + state.newgroup.id + '/members').update(updatess)
+    state.newgroup.members[state.newMember.id] = state.newMember
     // 然后将这个完整的group再更新进firebase,替换掉原本没有id的group
     var updates = {}
     updates[state.newgroup.id] = state.newgroup

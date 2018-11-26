@@ -2,6 +2,9 @@
 <template>
   <!-- 表示开始使用这个app -->
   <v-app light>
+    <navigation/>
+    <br/>
+    <br/>
     <router-view/>
   </v-app>
 </template>
