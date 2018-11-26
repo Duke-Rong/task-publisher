@@ -3,6 +3,7 @@ import { READ_GROUP,
   ADD_GROUP,
   DELETE_GROUP,
   ADD_MEMBER,
+  DELETE_MEMBER,
   ADD_CARD,
   SET_USER} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
@@ -28,6 +29,7 @@ const state = {
   newgroup: {
     name: '',
     id: '',
+    groupLeader: '',
     members: []
   },
   // members
@@ -86,6 +88,7 @@ const mutations = {
   [ADD_GROUP] (state, payload) {
     // 首先输入新的卡片当做payload
     state.newgroup.name = payload.name
+    state.newgroup.groupLeader = state.currentUser.uid
     // 将该群组以没有id的形式推入firebase,并获取这个id
     state.newgroup.id = groupsDB.push(state.newgroup).key
     var updates = {}
@@ -96,23 +99,9 @@ const mutations = {
     state.newMember.name = state.currentUser.email
     state.newMember.uid = state.currentUser.uid
     state.newMember.id = db.ref('/groups/' + state.newgroup.id + '/members').push(state.newMember).key
-    console.log(updates)
     var updatess = {}
     updatess[state.newMember.id] = state.newMember
     db.ref('/groups/' + state.newgroup.id + '/members').update(updatess)
-    console.log(updatess)
-    /*
-    db.ref('/groups/' + state.newgroup.id + '/members').child(payload).once('value').then(function (snapshot) {
-      state.newgroup.members = snapshot.val()
-      console.log(state.newgroup.members)
-    })
-    */
-    // 然后将这个完整的group再更新进firebase,替换掉原本没有id的group
-    /*
-    var updates = {}
-    updates[state.newgroup.id] = state.newgroup
-    groupsDB.update(updates)
-    */
   },
   // 输入卡号，删除群组
   [DELETE_GROUP] (state, payload) {
@@ -129,6 +118,9 @@ const mutations = {
     var updates = {}
     updates[state.newMember.id] = state.newMember
     db.ref('/groups/' + payload[0].id + '/members').update(updates)
+  },
+  [DELETE_MEMBER] (state, payload) {
+    db.ref('/groups/' + payload[0] + '/members').child(payload[1]).remove()
   },
   // 增加卡片，格式和增加member是一样的
   [ADD_CARD] (state, payload) {
@@ -179,6 +171,9 @@ const actions = {
   },
   setmember ({ commit }, payload) {
     commit(ADD_MEMBER, payload)
+  },
+  deletemember ({ commit }, payload) {
+    commit(DELETE_MEMBER, payload)
   },
   addcard ({ commit }, payload) {
     commit(ADD_CARD, payload)

@@ -15,9 +15,8 @@
              v-if="members.uid === user.uid">
           -----------------------------------
           <br>
-          <p>Group {{ index + 1 }}: {{ groups.name }}</p>
-          <button v-on:click="changeVisibility(index)">收缩</button>
-          <button v-on:click="set(groups)">Set</button>
+          <p v-on:click="changeVisibility(index)">Group {{ index + 1 }}: {{ groups.name }}</p>
+          <button v-on:click="set(groups,index)">Set</button>
             <div v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
               <li v-for="(members,indx) in groups.members"
@@ -35,6 +34,17 @@
     v-model="CurrentlyAddingMemberToOneGroup"
     max-width="1000px">
         <input type="text" v-model="currentGroup.name"><br>
+        <p v-bind:title="'Give this group id to your member so they can join your group!'"> Group ID: {{ currentGroup.id }} </p>
+          <!-- group members -->
+          <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
+                :key="membersShownInManageTheGroup">
+                {{ members.name }}
+                <!-- 当名字是组长的时候不出现删除按钮 -->
+                <button
+                v-show="members.uid !== currentGroup.groupLeader"
+                v-on:click="deleteMember(members)">delete</button>
+                <br>
+              </li>
         member name: <input type="text" v-model="newMember.name"><br>
         member uid: <input type="text" v-model="newMember.uid"><br>
         <button v-on:click="ok">OK</button>
@@ -68,11 +78,8 @@ export default {
         description: ''
       },
       // 当前正在修改的组，由set()传递
-      currentGroup: {
-        name: '',
-        id: '',
-        members: []
-      },
+      currentGroup: {},
+      currentGroupID: '',
       // 当前正在修改的member
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
@@ -99,6 +106,7 @@ export default {
         const newgroup = {}
         newgroup.name = group.name
         newgroup.id = group.id
+        newgroup.groupLeader = group.groupLeader
         newgroup.members  = group.members
         // 我们将group size的false存在这个array中
         // 这个array决定了groups是否延伸
@@ -118,17 +126,14 @@ export default {
   },
   methods: {
     // 将组群绑定到currentGroup里，并打开修改页
-    set: function(payload) {
+    set: function(payload,id) {
         this.CurrentlyAddingMemberToOneGroup = true
-        this.currentGroup = payload
+        this.currentGroupID = id
+        this.resetCurrentGroup()
     },
     ok: function() {
       this.$store.dispatch('setgroup', this.currentGroup)
-      const id = this.currentGroup.id
       this.discard()
-      // 重新从database抓取currentGroup
-      this.$store.dispatch('readgroup', id)
-      this.currentGroup = this.$store.getters.getCurrentGroup
     },
     // 修改组群并上传，然后清除痕迹
     addMember: function() {
@@ -136,18 +141,34 @@ export default {
       this.membersAndGroupToStore.push(this.currentGroup)
       this.membersAndGroupToStore.push(this.newMember)
       this.$store.dispatch('setmember', this.membersAndGroupToStore)
-      // 重新从database抓取currentGroup
-      this.$store.dispatch('readgroup', this.currentGroup.id)
-      this.currentGroup = this.$store.getters.getCurrentGroup
-      // 清理new member, 后期放入方程
-      this.newMember = { name:'', uid:'' }
-      this.membersAndGroupToStore = []
-      // update this.currentgroup?
+      const id = this.currentGroup.id
+      // 重新抓取currentGroup
+      this.resetCurrentGroup()
+      // 清理new member
+      this.clearMember()
+    },
+    deleteMember: function(payload) {
+      console.log(payload.uid)
+            console.log(this.currentGroup)
+      // 删除前确认
+      var r = confirm("Are you sure you want to delete" + payload.name + "?")
+      if (r){
+        // 删除
+        var toDelete = [];
+        toDelete[0] = this.currentGroup.id
+        toDelete[1] = payload.id
+        this.$store.dispatch('deletemember', toDelete)
+        this.resetCurrentGroup()
+      }
     },
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
-      this.currentGroup = { name: '', id: '', members: []}
+      this.currentGroup = {}
       this.CurrentlyAddingMemberToOneGroup = false
+      this.clearMember()
+    },
+    // 清理members添加的痕迹
+    clearMember: function() {
       this.newMember = { name:'', uid:'' }
       this.membersAndGroupToStore = []
     },
@@ -155,6 +176,10 @@ export default {
     changeVisibility: function(payload) {
       this.groupsExtendSwitch[payload] = !this.groupsExtendSwitch[payload]
       this.commaShown = !this.commaShown
+    },
+    // 重新抓取currentGroup
+    resetCurrentGroup: function(){
+        this.currentGroup = this.groupsInDatabase[this.currentGroupID]
     }
   }
 }

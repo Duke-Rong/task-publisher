@@ -60,7 +60,9 @@ destroyed(){
   console.log('destroyed')
 },
 
-
+setTimeout(() => {
+  this.AmITheUser = firebase.auth().currentUser.uid
+}, 500)
 
 
 
