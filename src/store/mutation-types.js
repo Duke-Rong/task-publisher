@@ -15,3 +15,6 @@ export const FIND_MEMBER = 'FIND_MEMBER'
 
 // For cards
 export const ADD_CARD = 'ADD_CARD'
+
+// For user
+export const SET_USER = 'SET_USER'
