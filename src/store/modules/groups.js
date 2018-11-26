@@ -7,9 +7,20 @@ import { READ_GROUP,
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
+
+// 新增：currentGroup, currentMember, currentCard
+// [SAVE_LOCAL_GROUP/MEMBER/CARD], 在被call的时候将传递而来的current g/m/c存入g/m/c内
+
 const state = {
   // 这应该是整个数据库里有多少groups
+
+  // 此处需要修改！仅读取uid与当前用户吻合的groups
+
   groups: [],
+  // 当前本项目的使用者
+  currentGroup: '',
+  currentMember: '',
+  currentCards: [],
   // groups
   newgroup: {
     name: '',
@@ -23,12 +34,12 @@ const state = {
     uid: '',
     cards: []
   },
+  // cards
   newCard: {
     id: '',
     name: '',
     description: ''
   }
-  // cards
 }
 
 // getters
@@ -70,7 +81,7 @@ const mutations = {
     // 这样一来，我们就获取了新的group,包含了完整的id和name
     // 然后将这个完整的group再更新进firebase,替换掉原本没有id的group
     var updates = {}
-    updates[state.newgroup.id ] = state.newgroup
+    updates[state.newgroup.id] = state.newgroup
     groupsDB.update(updates)
   },
   // 输入卡号，删除群组

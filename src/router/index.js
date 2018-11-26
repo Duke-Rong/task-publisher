@@ -5,6 +5,7 @@ import HelloWorld from '@/components/HelloWorld'
 const Auth = () => import(/* webpackChunkName: "Auth.vue" */'@/components/Auth.vue')
 const Add = () => import(/* webpackChunkName: "Add.vue" */'@/components/Add.vue')
 const Delete = () => import(/* webpackChunkName: "Delete.vue" */'@/components/Delete.vue')
+const MainPage = () => import(/* webpackChunkName: "MainPage.vue" */'@/components/MainPage.vue')
 
 Vue.use(Router)
 
@@ -34,6 +35,15 @@ const router = new Router({
       name: 'Delete',
       scrollToTop: true,
       component: Delete,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/mainpage',
+      name: 'MainPage',
+      scrollToTop: true,
+      component: MainPage,
       meta: {
         requiresAuth: true
       }
