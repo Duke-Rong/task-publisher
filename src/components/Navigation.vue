@@ -249,7 +249,6 @@ export default {
       this.CurrentlyDeletingLeader = false
     },
     deleteMemberHelper: function(payload) {
-      console.log(payload)
       var toDelete = [];
       toDelete[0] = this.currentGroup.id
       toDelete[1] = payload.id
