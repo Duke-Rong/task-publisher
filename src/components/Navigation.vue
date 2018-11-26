@@ -4,7 +4,7 @@
     <br>
     {{ user.email }}
     <br>
-    <router-link to="/add">Add group</router-link>
+    <button v-on:click="addGroupShown()">Add group</button>
     <!-- for loop. 展示所有groups里面的卡 -->
     <div v-for="(groups,index) in groupsInDatabase"
         :key="index">
@@ -15,21 +15,14 @@
              v-if="members.uid === user.uid">
           -----------------------------------
           <br>
-          <p v-on:click="changeVisibility(index)"> {{ groups.name }}</p>
+          <p v-on:click="changeGroupExtensionVisibility(groups,index)"> {{ groups.name }}</p>
           <button v-on:click="set(groups,index)">Set</button>
             <div v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
               <li v-for="(members,indx) in groups.members"
-                  :key="indx">
-                <!-- 当组员名不是当前用户时，显示paragraph -->
-                <!-- 当组员名是当前用户时，显示input好修改名字 -->
-                <div
-                v-if="members.uid !== user.uid">
-                {{ members.name }}</div>
-                <div v-else>
-                  <input v-model="members.name">
-                </div>
-                <!-- 当名字是你的时候才出现的更改名字按钮 -->
+                  :key="indx"
+                  v-on:click="ShowHisCards(members)">
+                {{ members.name }}
               </li>
             </div>
         </div>
@@ -46,7 +39,8 @@
           <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
                 :key="membersShownInManageTheGroup">
                 <!-- 此处需要对不同用户显示不同的东西 -->
-                <!-- 当组员名不是当前用户时，用paragraph显示名字 -->
+                <!-- 当组员名不是当前用户时，显示paragraph -->
+                <!-- 当组员名是当前用户时，显示input好修改名字 -->
                 <div
                 v-if="members.uid !== user.uid">
                 {{ members.name }}
@@ -89,6 +83,15 @@
       </li>
     </v-dialog>
 
+    <v-dialog
+    v-model="CurrentlyAddingGroup">
+      <p>Add groups</p>
+      Group name :
+      <input type="text" v-model="newGroup.name"><br>
+      <br>
+      <button v-on:click="createGroup">create</button>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -104,6 +107,12 @@ export default {
       user: '',
       // groups是否呈打开趋势
       groupsExtendSwitch: [],
+      // 被增加的组
+      newGroup: {
+        name: '',
+        id: null,
+        members: [],
+      },
       // 被增加的组员
       newMember: {
         name: '',
@@ -118,6 +127,7 @@ export default {
       currentGroup: {},
       currentGroupID: '',
       // 删除group leader时候，记住被删除的group leader
+      // 若是以后有其他需求，在set()中加
       currentGroupOwner: null,
       // 当前正在修改的member
       currentMember: null,
@@ -127,6 +137,8 @@ export default {
       CurrentlyAddingCardToOneMember: false,
       // 这个开关决定了决定新组长的dialoag的出现与否
       CurrentlyDeletingLeader: false,
+      // 这个开关决定了决定Add group的dialoag的出现与否
+      CurrentlyAddingGroup: false,
       // 当增加members时传递到store里的内容
       membersAndGroupToStore: [],
       // 当增加cards时传递到store里的内容
@@ -213,7 +225,11 @@ export default {
       this.membersAndGroupToStore = []
     },
     // 更改被点击的group的boolean值，使其延展/收起
-    changeVisibility: function(payload) {
+    changeGroupExtensionVisibility: function(group, payload) {
+      // set current group
+      this.currentGroupID = payload
+      this.resetCurrentGroup()
+      // change visibility
       this.groupsExtendSwitch[payload] = !this.groupsExtendSwitch[payload]
       this.commaShown = !this.commaShown
     },
@@ -248,12 +264,40 @@ export default {
       // 关闭对话
       this.CurrentlyDeletingLeader = false
     },
-    deleteMemberHelper: function(payload) {
+    deleteMemberHelper: function(payload) {s
       var toDelete = [];
       toDelete[0] = this.currentGroup.id
       toDelete[1] = payload.id
       this.$store.dispatch('deletemember', toDelete)
       this.resetCurrentGroup()
+    },
+    // 打开/关闭增加group的dialog
+    addGroupShown: function(){
+      this.CurrentlyAddingGroup = !this.CurrentlyAddingGroup
+    },
+    // 创建新的组并保存到firebase里面
+    createGroup: function(){
+      this.$store.dispatch('savegroup', this.newGroup)
+      // 清除刚刚输入的痕迹
+      this.ClearAddingGroup()
+    },
+    ClearAddingGroup: function() {
+      this.newGroup.name = ''
+      this.newGroup.id = null
+      this.newGroup.members = ''
+      this.addGroupShown()
+    },
+    // 当点击某人的名字时，在MainPage里展示他的卡片
+    ShowHisCards: function(payload) {
+      // set current
+      this.setToCurrent(payload)
+    },
+    // 将被点击的当前组，当前人和他的卡片统统存入store
+    setToCurrent: function(payload) {
+      var currentToStore = []
+      currentToStore[0] = this.currentGroup
+      currentToStore[1] = payload
+      this.$store.dispatch('setcurrent', currentToStore)
     }
   }
 }
