@@ -15,14 +15,21 @@
              v-if="members.uid === user.uid">
           -----------------------------------
           <br>
-          <p v-on:click="changeVisibility(index)">Group {{ index + 1 }}: {{ groups.name }}</p>
+          <p v-on:click="changeVisibility(index)"> {{ groups.name }}</p>
           <button v-on:click="set(groups,index)">Set</button>
             <div v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
               <li v-for="(members,indx) in groups.members"
                   :key="indx">
-                {{ members.name }}
-                <br>
+                <!-- 当组员名不是当前用户时，显示paragraph -->
+                <!-- 当组员名是当前用户时，显示input好修改名字 -->
+                <div
+                v-if="members.uid !== user.uid">
+                {{ members.name }}</div>
+                <div v-else>
+                  <input v-model="members.name">
+                </div>
+                <!-- 当名字是你的时候才出现的更改名字按钮 -->
               </li>
             </div>
         </div>
@@ -38,18 +45,48 @@
           <!-- group members -->
           <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
                 :key="membersShownInManageTheGroup">
+                <!-- 此处需要对不同用户显示不同的东西 -->
+                <!-- 当组员名不是当前用户时，用paragraph显示名字 -->
+                <div
+                v-if="members.uid !== user.uid">
                 {{ members.name }}
-                <!-- 当名字是组长的时候不出现删除按钮 -->
+                <!-- 当用户是组长时，显示删除组员按钮 -->
                 <button
-                v-show="members.uid !== currentGroup.groupLeader"
+                v-if="user.uid === currentGroup.groupLeader"
                 v-on:click="deleteMember(members)">delete</button>
+
+                </div>
+                <!-- 当组员名是当前用户时，显示input好修改名字 -->
+                <div v-else>
+                  <input v-model="members.name">
+                  <!-- 当用户是组员时，出现退出按钮 -->
+                  <button
+                  v-on:click="quit(members)">quit</button>
+                </div>
                 <br>
               </li>
+        <div
+        v-if="user.uid === currentGroup.groupLeader">
         member name: <input type="text" v-model="newMember.name"><br>
         member uid: <input type="text" v-model="newMember.uid"><br>
         <button v-on:click="ok">OK</button>
         <button v-on:click="addMember">Add member</button>
+        </div>
         <button v-on:click="discard">Discard</button>
+    </v-dialog>
+
+    <!-- 组长退出时候发生的对话 -->
+    <v-dialog
+    v-model="CurrentlyDeletingLeader">
+      Please choose the new Group Leader:
+      <!-- 此处用v-ratio选择 -->
+      <!-- 显示当前以外的人的名字 -->
+      <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
+          :key="membersShownInManageTheGroup"
+          v-if="members.uid !== currentGroup.groupLeader">
+          {{ members.name }}
+          <button v-on:click="exchangeLeader(members)">ok</button>
+      </li>
     </v-dialog>
 
   </div>
@@ -80,12 +117,16 @@ export default {
       // 当前正在修改的组，由set()传递
       currentGroup: {},
       currentGroupID: '',
+      // 删除group leader时候，记住被删除的group leader
+      currentGroupOwner: null,
       // 当前正在修改的member
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
       CurrentlyAddingMemberToOneGroup: false,
       // 这个开关决定了增加卡片的dialoag的出现与否
       CurrentlyAddingCardToOneMember: false,
+      // 这个开关决定了决定新组长的dialoag的出现与否
+      CurrentlyDeletingLeader: false,
       // 当增加members时传递到store里的内容
       membersAndGroupToStore: [],
       // 当增加cards时传递到store里的内容
@@ -130,10 +171,15 @@ export default {
         this.CurrentlyAddingMemberToOneGroup = true
         this.currentGroupID = id
         this.resetCurrentGroup()
+        // 同时，搜索group owner的在群里的id并保存在currentGroupOwner内
+        for (var memb in this.currentGroup.members){
+          if (this.currentGroup.members[memb].uid === this.currentGroup.groupLeader){
+            this.currentGroupOwner = this.currentGroup.members[memb]
+          }
+        }
     },
     ok: function() {
       this.$store.dispatch('setgroup', this.currentGroup)
-      this.discard()
     },
     // 修改组群并上传，然后清除痕迹
     addMember: function() {
@@ -148,22 +194,16 @@ export default {
       this.clearMember()
     },
     deleteMember: function(payload) {
-      console.log(payload.uid)
-            console.log(this.currentGroup)
       // 删除前确认
       var r = confirm("Are you sure you want to delete" + payload.name + "?")
       if (r){
         // 删除
-        var toDelete = [];
-        toDelete[0] = this.currentGroup.id
-        toDelete[1] = payload.id
-        this.$store.dispatch('deletemember', toDelete)
-        this.resetCurrentGroup()
+        this.deleteMemberHelper(payload)
       }
     },
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
-      this.currentGroup = {}
+      // this.currentGroup = {}
       this.CurrentlyAddingMemberToOneGroup = false
       this.clearMember()
     },
@@ -180,6 +220,41 @@ export default {
     // 重新抓取currentGroup
     resetCurrentGroup: function(){
         this.currentGroup = this.groupsInDatabase[this.currentGroupID]
+    },
+    // 退出本群
+    quit: function(payload){
+      // 当组长退出时，需要制定群主
+      if (this.currentGroup.groupLeader === payload.uid){
+        // 打开指定新群主的对话
+        this.CurrentlyDeletingLeader = true
+      } else {
+        // 组员退出，直接退就可以了
+        // 删除前确认
+        var r = confirm("Are you sure you want to quit?")
+        if (r){
+          // 删除
+          this.deleteMemberHelper(payload)
+        }
+      }
+    },
+    // 指定新的群主
+    exchangeLeader: function(payload) {
+      // 新群主被传入。将他变成群主
+      this.currentGroup.groupLeader = payload.uid
+      // 升级群的群主
+      this.$store.dispatch('setgroup', this.currentGroup)
+      // 自己退出
+      this.deleteMemberHelper(this.currentGroupOwner)
+      // 关闭对话
+      this.CurrentlyDeletingLeader = false
+    },
+    deleteMemberHelper: function(payload) {
+      console.log(payload)
+      var toDelete = [];
+      toDelete[0] = this.currentGroup.id
+      toDelete[1] = payload.id
+      this.$store.dispatch('deletemember', toDelete)
+      this.resetCurrentGroup()
     }
   }
 }

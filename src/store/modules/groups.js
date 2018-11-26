@@ -119,6 +119,7 @@ const mutations = {
     updates[state.newMember.id] = state.newMember
     db.ref('/groups/' + payload[0].id + '/members').update(updates)
   },
+  // 传入：组id和member id
   [DELETE_MEMBER] (state, payload) {
     db.ref('/groups/' + payload[0] + '/members').child(payload[1]).remove()
   },
