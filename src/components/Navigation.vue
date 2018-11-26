@@ -17,7 +17,7 @@
           <br>
           <p>Group {{ index + 1 }}: {{ groups.name }}</p>
           <button v-on:click="changeVisibility(index)">收缩</button>
-          <button v-on:click="set(groups)">Add members</button>
+          <button v-on:click="set(groups)">Set</button>
             <div v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
               <li v-for="(members,indx) in groups.members"
