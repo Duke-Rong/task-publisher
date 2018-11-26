@@ -34,9 +34,11 @@
     <v-dialog
     v-model="CurrentlyAddingMemberToOneGroup"
     max-width="1000px">
+        <input type="text" v-model="currentGroup.name"><br>
         member name: <input type="text" v-model="newMember.name"><br>
         member uid: <input type="text" v-model="newMember.uid"><br>
         <button v-on:click="ok">OK</button>
+        <button v-on:click="addMember">Add member</button>
         <button v-on:click="discard">Discard</button>
     </v-dialog>
 
@@ -66,7 +68,11 @@ export default {
         description: ''
       },
       // 当前正在修改的组，由set()传递
-      currentGroup: null,
+      currentGroup: {
+        name: '',
+        id: '',
+        members: []
+      },
       // 当前正在修改的member
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
@@ -116,17 +122,28 @@ export default {
         this.CurrentlyAddingMemberToOneGroup = true
         this.currentGroup = payload
     },
-    // 修改组群并上传，然后清除痕迹
     ok: function() {
-      // 将必须的信息传递到store里面去。这包括了group id和member name
-      this.membersAndGroupToStore.push(this.currentGroup.id)
-      this.membersAndGroupToStore.push(this.newMember)
-      this.$store.dispatch('setmember', this.membersAndGroupToStore)
+      this.$store.dispatch('setgroup', this.currentGroup)
       this.discard()
+    },
+    // 修改组群并上传，然后清除痕迹
+    addMember: function() {
+      // 将必须的信息传递到store里面去。这包括了group name, group id和member name
+      this.membersAndGroupToStore.push(this.currentGroup)
+      this.membersAndGroupToStore.push(this.newMember)
+      console.log(this.currentGroup)
+      this.$store.dispatch('setmember', this.membersAndGroupToStore)
+      // 重新从database抓取currentGroup
+      this.$store.dispatch('readgroup', this.currentGroup.id)
+      this.currentGroup = this.$store.getters.getCurrentGroup
+      // 清理new member, 后期放入方程
+      this.newMember = { name:'', uid:'' }
+      this.membersAndGroupToStore = []
+      // update this.currentgroup?
     },
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
-      this.currentGroup = null
+      this.currentGroup = { name: '', id: '', members: []}
       this.CurrentlyAddingMemberToOneGroup = false
       this.newMember = { name:'', uid:'' }
       this.membersAndGroupToStore = []

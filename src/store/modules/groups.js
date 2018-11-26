@@ -57,6 +57,9 @@ const getters = {
   },
   getCurrentUser (state) {
     return state.currentUser
+  },
+  getCurrentGroup (state) {
+    return state.currentGroup
   }
 }
 
@@ -65,11 +68,9 @@ const mutations = {
     state.currentUser = payload
   },
   // 输入：groupID 输出：该group
-  // 这玩意好像没啥用处
-  [READ_GROUP] (state) {
-    groupsDB.child(state.currentGroupID).once('value').then(function (snapshot) {
-      var value = snapshot.val()
-      value.id = state.currentGroupID
+  [READ_GROUP] (state, payload) {
+    groupsDB.child(payload).once('value').then(function (snapshot) {
+      state.currentGroup = snapshot.val()
     })
   },
   // 输入群组，可以直接修改firebase里的该群组
@@ -110,11 +111,11 @@ const mutations = {
     state.newMember.name = payload[1].name
     state.newMember.uid = payload[1].uid
     // 将其push进该组，并用同样的方法获取member id
-    state.newMember.id = db.ref('/groups/' + payload[0] + '/members').push(state.newMember).key
+    state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
     // 替换掉没有id的members
     var updates = {}
     updates[state.newMember.id] = state.newMember
-    db.ref('/groups/' + payload[0] + '/members').update(updates)
+    db.ref('/groups/' + payload[0].id + '/members').update(updates)
   },
   // 增加卡片，格式和增加member是一样的
   [ADD_CARD] (state, payload) {
@@ -147,6 +148,9 @@ const actions = {
     // 若是我没有猜错，这个groups即State里面的groups，会与其同步
     bindFirebaseRef('groups', payload)
   }),
+  readgroup ({ commit }, payload) {
+    commit(READ_GROUP, payload)
+  },
   setuser ({ commit }, payload) {
     commit(SET_USER, payload)
   },
