@@ -95,6 +95,7 @@ export default {
   computed: {
     // 将所有store,也就是firebase里面所有的组群展现给你们看
     groupsInDatabase () {
+      // this.user = firebase.auth().currentUser
       return this.$store.getters.getGroups.map((group) => {
         const newgroup = {}
         newgroup.name = group.name
@@ -104,7 +105,12 @@ export default {
       })
     }
   },
+  // 当页面跳转的时候，加载user
+  created(){
+    this.user = this.$store.getters.getCurrentUser
+  },
   // 使用用户的email作为名字
+  // 仅在刚刚打开页面时使用
   beforeUpdate() {
     this.user = firebase.auth().currentUser
   },

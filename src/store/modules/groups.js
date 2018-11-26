@@ -3,7 +3,8 @@ import { READ_GROUP,
   ADD_GROUP,
   DELETE_GROUP,
   ADD_MEMBER,
-  ADD_CARD } from '@/store/mutation-types'
+  ADD_CARD,
+  SET_USER} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -18,6 +19,7 @@ const state = {
 
   groups: [],
   // 当前本项目的使用者
+  currentUser: '',
   currentGroup: '',
   currentMember: '',
   currentCards: [],
@@ -52,10 +54,16 @@ const getters = {
   },
   getNewCard (state) {
     return state.newCard
+  },
+  getCurrentUser (state) {
+    return state.currentUser
   }
 }
 
 const mutations = {
+  [SET_USER] (state, payload) {
+    state.currentUser = payload
+  },
   // 输入：groupID 输出：该group
   // 这玩意好像没啥用处
   [READ_GROUP] (state) {
@@ -131,6 +139,9 @@ const actions = {
     // 若是我没有猜错，这个groups即State里面的groups，会与其同步
     bindFirebaseRef('groups', payload)
   }),
+  setuser ({ commit }, payload) {
+    commit(SET_USER, payload)
+  },
   // 将来应该还有设置卡片等等
   savegroup ({ commit }, payload) {
     commit(ADD_GROUP, payload)

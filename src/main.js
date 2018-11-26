@@ -25,6 +25,7 @@ new Vue({
     // 确认是否已经登录。若是，则跳转至页面；若否，则跳转至登录页面
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        this.$store.dispatch('setuser',user)
         this.$router.push('/')
       } else {
         this.$router.push('/auth')

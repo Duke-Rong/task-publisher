@@ -23,3 +23,39 @@
 // 修改：无论是什么时候，修改卡片的确定按钮都是将current card和current member id当做payload
 // 传递。也可以在cards里放入member id，则只需要传递卡片。需要注意的是，dispatch后还需要重新
 // get一遍新的卡片才行（吗？）
+
+
+
+beforeCreate(){
+  console.log('beforeCreate')
+},
+
+created(){
+  console.log('created')
+},
+
+beforeMount(){
+  console.log('beforeMount')
+},
+
+mounted(){
+  console.log('mounted')
+},
+
+
+beforeUpdate() {
+  console.log('beforeUpdate')
+},
+
+
+updated(){
+  console.log('updated')
+},
+
+beforeDestroy(){
+  console.log('beforeDestroy')
+},
+
+destroyed(){
+  console.log('destroyed')
+},
