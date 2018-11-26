@@ -19,10 +19,11 @@
           <button v-on:click="set(groups,index)">Set</button>
             <div v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
-              <li v-for="(members,indx) in groups.members"
-                  :key="indx"
-                  v-on:click="ShowHisCards(members)">
-                {{ members.name }}
+              <li
+                 v-for="(members,indx) in groups.members"
+                 :key="indx"
+                 v-on:click="ShowHisCards(members)">
+                <router-link :to="'/cards/' + members.id">{{ members.name }}</router-link>
               </li>
             </div>
         </div>
