@@ -6,33 +6,39 @@
     <br>
     <router-link to="/delete">Delete group</router-link>
     <br>
-    <!-- for loop. 展示所有groups里面的卡-->
+    <!-- for loop. 展示所有groups里面的卡 -->
     <div v-for="(groups,index) in groupsInDatabase"
         :key="index">
-        -----------------------------------
-        <br>
-        Group {{ index + 1 }}: {{ groups.name }}
-        <br>
-        id: {{ groups.id }}
-        <button v-on:click="set(groups)">Add members</button>
+        <!-- 此处进行筛选 -->
+        <!-- 由于每一个group里相同的member只有一个，因此每次组只会显示一次 -->
+        <div v-for="(members,indxxx) in groups.members"
+             :key="indxxx"
+             v-if="members.uid === user.uid">
+          -----------------------------------
+          <br>
+          Group {{ index + 1 }}: {{ groups.name }}
+          <br>
+          id: {{ groups.id }}
+          <button v-on:click="set(groups)">Add members</button>
 
-          <!-- 展示组下所有成员-->
-          <li v-for="(members,indx) in groups.members"
-              :key="indx" >
-            {{ members.name }}
-            <button v-on:click="addCards(members, groups)">Add cards</button>
-            <br>
+            <!-- 展示组下所有成员-->
+            <li v-for="(members,indx) in groups.members"
+                :key="indx" >
+              {{ members.name }}
+              <button v-on:click="addCards(members, groups)">Add cards</button>
+              <br>
 
-            <!-- 展示人名下所有卡牌-->
-            <div>
-                <dl v-for="(cards,indxx) in members.cards"
-                :key="indxx" >
-                <dt>&ensp;-- card name: {{ cards.name }}</dt>
-                <dt>&ensp;-- card description: {{ cards.description }}</dt>
-                </dl>
-            </div>
+              <!-- 展示人名下所有卡牌-->
+              <div>
+                  <dl v-for="(cards,indxx) in members.cards"
+                  :key="indxx" >
+                  <dt>&ensp;-- card name: {{ cards.name }}</dt>
+                  <dt>&ensp;-- card description: {{ cards.description }}</dt>
+                  </dl>
+              </div>
 
-          </li>
+            </li>
+        </div>
     </div>
 
 
@@ -95,7 +101,6 @@ export default {
   computed: {
     // 将所有store,也就是firebase里面所有的组群展现给你们看
     groupsInDatabase () {
-      // this.user = firebase.auth().currentUser
       return this.$store.getters.getGroups.map((group) => {
         const newgroup = {}
         newgroup.name = group.name
