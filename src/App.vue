@@ -13,7 +13,10 @@
             <navigation/>
           </v-flex>
           <v-flex xs12>
-              <router-view/>
+            <router-view/>
+          </v-flex>
+          <v-flex xs12>
+            <Header/>
           </v-flex>
         </v-layout>
       </v-container>
@@ -23,9 +26,10 @@
 
 <script>
 import Navigation from '@/components/Navigation'
+import Header from '@/components/Header'
 import { groupsDB } from '@/services/firebase.conf'
 export default {
-  components: { Navigation },
+  components: { Navigation, Header },
   name: 'App',
     // Combine firebase with this project
   created () {

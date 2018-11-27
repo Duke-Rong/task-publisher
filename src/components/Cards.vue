@@ -1,20 +1,40 @@
 <template>
   <div>
-    Cards under this guy:
-    <button v-on:click="addCard()">Add</button>
-    <li
-    v-for="(cards,cardsIndex) in currentCards"
-    :key="cardsIndex">
-      {{ cards.name }}
-      {{ cards.description }}
-    </li>
+    <!-- 当一般情况下，显示单人的卡片 -->
+    <div v-show="!currentShowingLeader">
+      Cards under this guy:
+      <button v-on:click="addCard()">Add</button>
+      <li
+      v-for="(cards,cardsIndex) in currentCards"
+      :key="cardsIndex">
+        {{ cards.name }}
+        {{ cards.description }}
+      </li>
 
-    <v-dialog
-    v-model="currentAddingCards">
-      Card name: <input type="text" v-model="newCard.name"><br>
-      Card description: <input type="text" v-model="newCard.description"><br>
-      <button v-on:click="confirmAddingThisCard">OK</button>
-    </v-dialog>
+      <v-dialog
+      v-model="currentAddingCards">
+        Card name: <input type="text" v-model="newCard.name"><br>
+        Card description: <input type="text" v-model="newCard.description"><br>
+        <button v-on:click="confirmAddingThisCard">OK</button>
+      </v-dialog>
+    </div>
+
+    <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
+    <div
+    v-show="currentShowingLeader">
+      <div
+      v-for="(members,memberIndex) in currentGroup.members"
+      :key="memberIndex">
+        Member: {{ members.name }}
+        <li
+        v-for="(cards,cardsIndex) in members.cards"
+        :key="cardsIndex">
+          {{ cards.name }}
+          {{ cards.description }}
+        </li>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -52,19 +72,21 @@ export default {
       currentAddingCards: false
     }
   },
+  // 凡是和store有关的东西都在这里
+  // 理论上他应该是自动更新的
   computed: {
     currentGroup() {
       if (this.$store.getters.getCurrentGroup){
         return this.$store.getters.getCurrentGroup
       } else {
-        return this.newgroup
+        return null
       }
     },
     currentMember() {
       if (this.$store.getters.getCurrentMember){
         return this.$store.getters.getCurrentMember
       } else {
-        return this.newMember
+        return null
       }
     },
     currentCards() {
@@ -73,6 +95,10 @@ export default {
       } else {
         return null
       }
+    },
+    // 这个开关决定了是否按下了leader按钮
+    currentShowingLeader() {
+      return this.$store.getters.getLeaderButtonPushed
     }
   },
   watch: {
@@ -88,20 +114,18 @@ export default {
     },
     currentCards (newer, older) {
 
-    }
+    },
     */
   },
   methods: {
     addCard() {
-      console.log(this.currentCards)
-      this.clearNewGroup()
+      this.clearNewCard()
       this.currentAddingCards = !this.currentAddingCards
     },
     confirmAddingThisCard() {
       this.$store.dispatch('addcard', this.newCard)
       this.addCard()
     },
-
     /**
      * 清除
      */
@@ -127,7 +151,7 @@ export default {
         name: '',
         description: ''
       }
-    },
+    }
   }
 }
 </script>
