@@ -102,6 +102,7 @@
       Group id :
       <input type="text" v-model="GroupIDGoingToAdd"><br>
       <button v-on:click="addIntoAGroup">enter</button>
+      <button v-on:click="addGroupShown">close</button>
       <p>Ask your group leader for the group id</p>
     </v-dialog>
 
@@ -381,7 +382,7 @@ export default {
         this.CurrentlyAddingIntoAGroup = false
       } else {
         // Otherwise, user is already in that group
-        console.log('加你妈')
+        alert('It looks like you are already in that group.')
       }
     },
     closeTheGroupNotFound: function() {
