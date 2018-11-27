@@ -64,10 +64,10 @@
         v-if="user.uid === currentGroup.groupLeader">
         member name: <input type="text" v-model="newMember.name"><br>
         member uid: <input type="text" v-model="newMember.uid"><br>
-        <button v-on:click="ok">OK</button>
+        <button v-on:click="confirmChange">OK</button>
         <button v-on:click="addMember">Add member</button>
         </div>
-        <button v-on:click="discard">Discard</button>
+        <button v-on:click="discard">Close</button>
     </v-dialog>
 
     <!-- 组长退出时候发生的对话 -->
@@ -131,6 +131,7 @@ export default {
       // 若是以后有其他需求，在set()中加
       currentGroupOwner: null,
       // 当前正在修改的member
+      // 只有在被点击到名字后才会更新进store
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
       CurrentlyAddingMemberToOneGroup: false,
@@ -178,6 +179,13 @@ export default {
   beforeUpdate() {
     this.user = firebase.auth().currentUser
   },
+  updated() {
+    // situation: 当打开的卡片是member a，而member a被删掉的情况下
+    // 会从cards页面里面删掉他
+    if (this.currentMember){
+      this.setToCurrent(this.currentMember)
+    }
+  },
   methods: {
     // 将组群绑定到currentGroup里，并打开修改页
     set: function(payload,id) {
@@ -191,8 +199,8 @@ export default {
           }
         }
     },
-    ok: function() {
-      this.$store.dispatch('setgroup', this.currentGroup)
+    confirmChange: function() {
+      this.$store.dispatch('setgroup',this.currentGroup)
     },
     // 修改组群并上传，然后清除痕迹
     addMember: function() {
@@ -208,7 +216,7 @@ export default {
     },
     deleteMember: function(payload) {
       // 删除前确认
-      var r = confirm("Are you sure you want to delete" + payload.name + "?")
+      var r = confirm("Are you sure you want to delete " + payload.name + " ?")
       if (r){
         // 删除
         this.deleteMemberHelper(payload)
@@ -216,7 +224,6 @@ export default {
     },
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
-      // this.currentGroup = {}
       this.CurrentlyAddingMemberToOneGroup = false
       this.clearMember()
     },
@@ -240,16 +247,31 @@ export default {
     },
     // 退出本群
     quit: function(payload){
-      // 当组长退出时，需要制定群主
-      if (this.currentGroup.groupLeader === payload.uid){
-        // 打开指定新群主的对话
-        this.CurrentlyDeletingLeader = true
-      } else {
-        // 组员退出，直接退就可以了
-        // 删除前确认
-        var r = confirm("Are you sure you want to quit?")
-        if (r){
-          // 删除
+      var r = confirm("Are you sure you want to quit?")
+      if (r){
+        // 当组长退出时，需要制定群主
+        if (this.currentGroup.groupLeader === payload.uid){
+          // 打开指定新群主的对话
+          var areYouTheOnlyOne = true
+          // 若是想退出新建的group，则监测当前的group里是否只有你一人
+          for (var memb in this.currentGroup.members){
+            // 当还有其他人在里面时
+            if (this.currentGroup.members[memb].uid !== this.currentGroup.groupLeader){
+              areYouTheOnlyOne = false
+            }
+          }
+          // 如果不是新建的group，则选择新组长
+          if (!areYouTheOnlyOne) {
+            this.CurrentlyDeletingLeader = true
+          } else {
+            // 若是新建的group，里面只有你一个人，则直接删除
+            this.$store.dispatch('deletegroup',this.currentGroup.id)
+            this.discard()
+          }
+        } else {
+          // 组员退出，直接退就可以了
+          // 删除前确认
+            // 删除
           this.deleteMemberHelper(payload)
         }
       }
@@ -264,8 +286,9 @@ export default {
       this.deleteMemberHelper(this.currentGroupOwner)
       // 关闭对话
       this.CurrentlyDeletingLeader = false
+      this.discard()
     },
-    deleteMemberHelper: function(payload) {s
+    deleteMemberHelper: function(payload) {
       var toDelete = [];
       toDelete[0] = this.currentGroup.id
       toDelete[1] = payload.id
@@ -289,15 +312,17 @@ export default {
       this.addGroupShown()
     },
     // 当点击某人的名字时，在MainPage里展示他的卡片
+    // 通过将三元素传递到store里实现
     ShowHisCards: function(payload) {
       // set current
       this.setToCurrent(payload)
     },
     // 将被点击的当前组，当前人和他的卡片统统存入store
     setToCurrent: function(payload) {
+      this.currentMember = payload
       var currentToStore = []
-      currentToStore[0] = this.currentGroup
-      currentToStore[1] = payload
+      currentToStore[0] = this.currentGroupID
+      currentToStore[1] = payload.id
       this.$store.dispatch('setcurrent', currentToStore)
     }
   }

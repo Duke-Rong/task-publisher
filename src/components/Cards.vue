@@ -2,36 +2,95 @@
   <div>
     Cards under this guy:
     <button v-on:click="addCard()">Add</button>
+    <li
+    v-for="(cards,cardsIndex) in currentCards"
+    :key="cardsIndex">
+      {{ cards.name }}
+      {{ cards.description }}
+    </li>
+
+    <v-dialog
+    v-model="currentAddingCards">
+      Card name: <input type="text" v-model="newCard.name"><br>
+      Card description: <input type="text" v-model="newCard.description"><br>
+      <button v-on:click="confirmAddingThisCard">OK</button>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 export default {
+  /**
+   * 在本component中，所有的数据均来自store里的current家族
+   * 存储修改也是直接call setCurrent
+   */
   name: 'Cards',
   data() {
     return {
-      currentGroup: '',
-      currentMember: '',
-      currentCards: ''
+      // group
+      newgroup: {
+        name: '',
+        id: '',
+        groupLeader: '',
+        members: []
+      },
+      // members
+      newMember: {
+        name: '',
+        id: '你tm被删了！',
+        uid: '',
+        cards: []
+      },
+      // cards
+      newCard: {
+        id: '',
+        name: '',
+        description: ''
+      },
+      // 这个开关决定了当前是否在增加cards
+      currentAddingCards: false
     }
   },
-  mounted() {
-    this.updateCurrents()
+  computed: {
+    currentGroup() {
+      if (this.$store.getters.getCurrentGroup){
+        return this.$store.getters.getCurrentGroup
+      } else {
+        return this.newgroup
+      }
+    },
+    currentMember() {
+      if (this.$store.getters.getCurrentMember){
+        return this.$store.getters.getCurrentMember
+      } else {
+        return this.newMember
+      }
+    },
+    currentCards() {
+      if (this.$store.getters.getCurrentCards){
+        return this.$store.getters.getCurrentCards
+      } else {
+        return null
+      }
+    },
   },
   watch: {
     '$route' (to, from) {
-      this.updateCurrents()
-      console.log(this.currentMember)
+
     }
   },
   methods: {
-    updateCurrents() {
-      this.currentGroup = this.$store.getters.getCurrentGroup
-      this.currentMember = this.$store.getters.getCurrentMember
-      this.currentCards = this.$store.getters.getCurrentCards
-    },
     addCard() {
-
+      this.newCard =  {
+        id: '',
+        name: '',
+        description: ''
+      }
+      this.currentAddingCards = !this.currentAddingCards
+    },
+    confirmAddingThisCard() {
+      this.$store.dispatch('addcard', this.newCard)
+      this.addCard()
     }
   }
 }

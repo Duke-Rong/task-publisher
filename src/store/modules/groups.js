@@ -74,16 +74,20 @@ const getters = {
 }
 
 const mutations = {
-  [SET_USER] (state, payload) {
-    state.currentUser = payload
-  },
   // 设置当前该项目的用户
   // call: 项目auth()加载后
   // 一旦决定用户，在关闭整个项目之前是不会自动更新的
+  [SET_USER] (state, payload) {
+    state.currentUser = payload
+  },
+  // 这玩意貌似会自动更新！
+  // 传入：group id, member id
   [SET_CURRENT] (state, payload) {
-    state.currentGroup = payload[0]
-    state.currentMember = payload[1]
-    state.currentCards = payload[1].cards
+    state.currentGroup = state.groups[payload[0]]
+    state.currentMember = state.currentGroup.members[payload[1]]
+    if (state.currentMember) {
+      state.currentCards = state.currentMember.cards
+    }
   },
   // 输入：groupID 输出：该group
   [READ_GROUP] (state, payload) {
@@ -118,7 +122,7 @@ const mutations = {
     updatess[state.newMember.id] = state.newMember
     db.ref('/groups/' + state.newgroup.id + '/members').update(updatess)
   },
-  // 输入卡号，删除群组
+  // 输入组号，删除群组
   [DELETE_GROUP] (state, payload) {
     groupsDB.child(payload).remove()
   },
