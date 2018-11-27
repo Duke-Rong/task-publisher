@@ -24,7 +24,7 @@
                  v-for="(members,indx) in groups.members"
                  :key="indx"
                  v-on:click="ShowHisCards(members)">
-                <router-link :to="'/cards/' + members.id">{{ members.name }}</router-link>
+                <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
               </li>
             </div>
         </div>
