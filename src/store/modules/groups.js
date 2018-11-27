@@ -6,7 +6,7 @@ import { READ_GROUP,
   DELETE_MEMBER,
   SET_CURRENT,
   ADD_CARD,
-  SET_CARD,
+  LEADER_BUTTON,
   SET_USER} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
@@ -96,7 +96,7 @@ const mutations = {
     }
   },
   // 设置卡组成currentGroup内的所有members的卡组
-  [SET_CARD] (state) {
+  [LEADER_BUTTON] (state, payload) {
     /*
     state.currentCards = []
     for (var membs in state.currentGroup.members){
@@ -105,7 +105,7 @@ const mutations = {
       }
     }
     */
-    state.LeaderButtonPushed = !state.LeaderButtonPushed
+    state.LeaderButtonPushed = payload
   },
   // 输入：groupID 输出：该group
   [READ_GROUP] (state, payload) {
@@ -204,8 +204,8 @@ const actions = {
   setcurrent ({ commit }, payload) {
     commit(SET_CURRENT, payload)
   },
-  setcard ({ commit }) {
-    commit(SET_CARD)
+  setLeaderButton ({ commit }, payload) {
+    commit(LEADER_BUTTON, payload)
   },
   readgroup ({ commit }, payload) {
     commit(READ_GROUP, payload)

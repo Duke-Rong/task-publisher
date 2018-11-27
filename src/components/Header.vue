@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     Leader() {
-      this.$store.dispatch('setcard')
+      this.$store.dispatch('setLeaderButton', true)
     }
   }
 }

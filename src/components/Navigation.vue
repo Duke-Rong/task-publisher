@@ -404,6 +404,8 @@ export default {
     ShowHisCards: function(payload) {
       // set current
       this.setToCurrent(payload)
+      // leader presssed = false
+      this.$store.dispatch('setLeaderButton', false)
     },
     // 将被点击的当前组，当前人和他的卡片统统存入store
     setToCurrent: function(payload) {
