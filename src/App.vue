@@ -2,10 +2,22 @@
 <template>
   <!-- 表示开始使用这个app -->
   <v-app light>
-    <navigation/>
-    <br/>
-    <br/>
-    <router-view/>
+    <!-- 此处放main header -->
+    <!-- 容器,里面可以包含container -->
+    <v-content>
+      <!-- 自动与页面调节大小 -->
+      <v-container
+        fluid>
+        <v-layout row >
+          <v-flex xs6>
+            <navigation/>
+          </v-flex>
+          <v-flex xs12>
+              <router-view/>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
   </v-app>
 </template>
 
