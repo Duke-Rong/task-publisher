@@ -4,7 +4,7 @@ import Vue from 'vue'
 import App from './App'
 // vuetify
 import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
+// import 'vuetify/dist/vuetify.min.css'
 // router
 import router from './router'
 // 如果不import store则根本不使用store

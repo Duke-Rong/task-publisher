@@ -198,7 +198,7 @@ export default {
       // 将必须的信息传递到store里面去。这包括了group id和member name
       this.membersAndGroupToStore.push(this.currentGroup.id)
       this.membersAndGroupToStore.push(this.newMember)
-      this.$store.dispatch('setmember', this.membersAndGroupToStore)
+      this.$store.dispatch('addmember', this.membersAndGroupToStore)
       this.discard()
     },
     // 清除痕迹（这包括关闭修改卡）

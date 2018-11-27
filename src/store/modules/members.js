@@ -63,7 +63,7 @@ const mutations = {
 
 const actions = {
   // 设置群组
-  setMembersRef: firebaseAction(({ bindFirebaseRef }) => {
+  setmembersRef: firebaseAction(({ bindFirebaseRef }) => {
     bindFirebaseRef('members', membersDB)
   }),
   // 将来应该还有设置卡片等等
@@ -73,7 +73,7 @@ const actions = {
   deletemember ({ commit }, payload) {
     commit(DELETE_MEMBER, payload)
   },
-  setmember ({ commit }, payload) {
+  addmember ({ commit }, payload) {
     commit(SET_MEMBER, payload)
   }
 }

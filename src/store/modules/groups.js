@@ -127,6 +127,7 @@ const mutations = {
     groupsDB.child(payload).remove()
   },
   // 由Add传递。payload内含需要增加的组员和群id
+  // 传入：payload[0]是group, payload[1]是member
   [ADD_MEMBER] (state, payload) {
     // 获取新组员名字.
     state.newMember.name = payload[1].name
@@ -192,7 +193,7 @@ const actions = {
   setgroup ({ commit }, payload) {
     commit(SET_GROUP, payload)
   },
-  setmember ({ commit }, payload) {
+  addmember ({ commit }, payload) {
     commit(ADD_MEMBER, payload)
   },
   deletemember ({ commit }, payload) {
