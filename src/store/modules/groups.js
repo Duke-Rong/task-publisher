@@ -142,6 +142,12 @@ const mutations = {
   // 传入：组id和member id
   [DELETE_MEMBER] (state, payload) {
     db.ref('/groups/' + payload[0] + '/members').child(payload[1]).remove()
+    // If the member deleting is the same as the one in cards,
+    //  remove the current card
+    if(state.currentMember.id === payload[1]){
+      state.currentMember = null
+      state.currentCards = null
+    }
   },
   // 增加卡片，格式和增加member是一样的
   [ADD_CARD] (state, payload) {

@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   /**
    * 在本component中，所有的数据均来自store里的current家族
@@ -37,7 +38,7 @@ export default {
       // members
       newMember: {
         name: '',
-        id: '你tm被删了！',
+        id: '',
         uid: '',
         cards: []
       },
@@ -72,26 +73,61 @@ export default {
       } else {
         return null
       }
-    },
+    }
   },
   watch: {
+    /**
     '$route' (to, from) {
 
     }
+    currentGroup (newer, older) {
+
+    },
+    currentMember (newer, older) {
+
+    },
+    currentCards (newer, older) {
+
+    }
+    */
   },
   methods: {
     addCard() {
-      this.newCard =  {
-        id: '',
-        name: '',
-        description: ''
-      }
+      console.log(this.currentCards)
+      this.clearNewGroup()
       this.currentAddingCards = !this.currentAddingCards
     },
     confirmAddingThisCard() {
       this.$store.dispatch('addcard', this.newCard)
       this.addCard()
-    }
+    },
+
+    /**
+     * 清除
+     */
+    clearNewGroup: function() {
+      this.newgroup = {
+        name: '',
+        id: '',
+        groupLeader: '',
+        members: []
+      }
+    },
+    clearNewMember: function() {
+      this.newMember = {
+        name: '',
+        id: '',
+        uid: '',
+        cards: []
+      }
+    },
+    clearNewCard: function() {
+      this.newCard =  {
+        id: '',
+        name: '',
+        description: ''
+      }
+    },
   }
 }
 </script>
