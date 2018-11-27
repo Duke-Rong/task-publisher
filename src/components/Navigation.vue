@@ -4,7 +4,8 @@
     <br>
     {{ user.email }}
     <br>
-    <button v-on:click="addGroupShown()">Add group</button>
+    <button v-on:click="addGroupShown()">Add into a group</button>
+    <button v-on:click="createGroupShown()">Create group</button>
     <!-- for loop. 展示所有groups里面的卡 -->
     <div v-for="(groups,index) in groupsInDatabase"
         :key="index">
@@ -19,10 +20,11 @@
           <button v-on:click="set(groups,index)">Set</button>
             <div v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
-              <li v-for="(members,indx) in groups.members"
-                  :key="indx"
-                  v-on:click="ShowHisCards(members)">
-                {{ members.name }}
+              <li
+                 v-for="(members,indx) in groups.members"
+                 :key="indx"
+                 v-on:click="ShowHisCards(members)">
+                <router-link :to="'/cards/' + members.id">{{ members.name }}</router-link>
               </li>
             </div>
         </div>
@@ -63,10 +65,10 @@
         v-if="user.uid === currentGroup.groupLeader">
         member name: <input type="text" v-model="newMember.name"><br>
         member uid: <input type="text" v-model="newMember.uid"><br>
-        <button v-on:click="ok">OK</button>
+        <button v-on:click="confirmChange">OK</button>
         <button v-on:click="addMember">Add member</button>
         </div>
-        <button v-on:click="discard">Discard</button>
+        <button v-on:click="discard">Close</button>
     </v-dialog>
 
     <!-- 组长退出时候发生的对话 -->
@@ -83,13 +85,37 @@
       </li>
     </v-dialog>
 
+    <!-- 创建组时发生的对话 -->
     <v-dialog
-    v-model="CurrentlyAddingGroup">
-      <p>Add groups</p>
+    v-model="CurrentlyCreatingGroup">
+      <p>Create a new group</p>
       Group name :
       <input type="text" v-model="newGroup.name"><br>
       <br>
       <button v-on:click="createGroup">create</button>
+    </v-dialog>
+
+    <!-- 加入组时发生的对话 -->
+    <v-dialog
+    v-model="CurrentlyAddingIntoAGroup">
+      <p>Please enter the group ID:</p>
+      Group id :
+      <input type="text" v-model="GroupIDGoingToAdd"><br>
+      <button v-on:click="addIntoAGroup">enter</button>
+      <button v-on:click="addGroupShown">close</button>
+      <p>Ask your group leader for the group id</p>
+    </v-dialog>
+
+    <!-- 组织找不到时发生的对话 -->
+    <v-dialog
+    v-model="GroupNotFound">
+      <p>We cannot found the group :(</p>
+      <p>You can:</p>
+      Try again :
+      <input type="text" v-model="GroupIDGoingToAdd"><br>
+      <button v-on:click="addIntoAGroup">enter</button>
+      <br> Or ask your leader for the correct group ID
+      <button v-on:click="closeTheGroupNotFound">close</button>
     </v-dialog>
 
   </div>
@@ -130,6 +156,7 @@ export default {
       // 若是以后有其他需求，在set()中加
       currentGroupOwner: null,
       // 当前正在修改的member
+      // 只有在被点击到名字后才会更新进store
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
       CurrentlyAddingMemberToOneGroup: false,
@@ -137,8 +164,14 @@ export default {
       CurrentlyAddingCardToOneMember: false,
       // 这个开关决定了决定新组长的dialoag的出现与否
       CurrentlyDeletingLeader: false,
-      // 这个开关决定了决定Add group的dialoag的出现与否
-      CurrentlyAddingGroup: false,
+      // 这个开关决定了决定ACreate group的dialoag的出现与否
+      CurrentlyCreatingGroup: false,
+      // 这个开关决定了决定Add into group的dialoag的出现与否
+      CurrentlyAddingIntoAGroup: false,
+      // 这个开关决定了决定group not found的dialoag的出现与否
+      GroupNotFound: false,
+      // 这个值保存了想加入的group
+      GroupIDGoingToAdd: '',
       // 当增加members时传递到store里的内容
       membersAndGroupToStore: [],
       // 当增加cards时传递到store里的内容
@@ -177,6 +210,13 @@ export default {
   beforeUpdate() {
     this.user = firebase.auth().currentUser
   },
+  updated() {
+    // situation: 当打开的卡片是member a，而member a被删掉的情况下
+    // 会从cards页面里面删掉他
+    if (this.currentMember){
+      this.setToCurrent(this.currentMember)
+    }
+  },
   methods: {
     // 将组群绑定到currentGroup里，并打开修改页
     set: function(payload,id) {
@@ -190,15 +230,16 @@ export default {
           }
         }
     },
-    ok: function() {
-      this.$store.dispatch('setgroup', this.currentGroup)
+    confirmChange: function() {
+      this.$store.dispatch('setgroup',this.currentGroup)
+      this.discard()
     },
     // 修改组群并上传，然后清除痕迹
     addMember: function() {
       // 将必须的信息传递到store里面去。这包括了group name, group id和member name
       this.membersAndGroupToStore.push(this.currentGroup)
       this.membersAndGroupToStore.push(this.newMember)
-      this.$store.dispatch('setmember', this.membersAndGroupToStore)
+      this.$store.dispatch('addmember', this.membersAndGroupToStore)
       const id = this.currentGroup.id
       // 重新抓取currentGroup
       this.resetCurrentGroup()
@@ -207,7 +248,7 @@ export default {
     },
     deleteMember: function(payload) {
       // 删除前确认
-      var r = confirm("Are you sure you want to delete" + payload.name + "?")
+      var r = confirm("Are you sure you want to delete " + payload.name + " ?")
       if (r){
         // 删除
         this.deleteMemberHelper(payload)
@@ -215,7 +256,6 @@ export default {
     },
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
-      // this.currentGroup = {}
       this.CurrentlyAddingMemberToOneGroup = false
       this.clearMember()
     },
@@ -239,16 +279,31 @@ export default {
     },
     // 退出本群
     quit: function(payload){
-      // 当组长退出时，需要制定群主
-      if (this.currentGroup.groupLeader === payload.uid){
-        // 打开指定新群主的对话
-        this.CurrentlyDeletingLeader = true
-      } else {
-        // 组员退出，直接退就可以了
-        // 删除前确认
-        var r = confirm("Are you sure you want to quit?")
-        if (r){
-          // 删除
+      var r = confirm("Are you sure you want to quit?")
+      if (r){
+        // 当组长退出时，需要制定群主
+        if (this.currentGroup.groupLeader === payload.uid){
+          // 打开指定新群主的对话
+          var areYouTheOnlyOne = true
+          // 若是想退出新建的group，则监测当前的group里是否只有你一人
+          for (var memb in this.currentGroup.members){
+            // 当还有其他人在里面时
+            if (this.currentGroup.members[memb].uid !== this.currentGroup.groupLeader){
+              areYouTheOnlyOne = false
+            }
+          }
+          // 如果不是新建的group，则选择新组长
+          if (!areYouTheOnlyOne) {
+            this.CurrentlyDeletingLeader = true
+          } else {
+            // 若是新建的group，里面只有你一个人，则直接删除
+            this.$store.dispatch('deletegroup',this.currentGroup.id)
+            this.discard()
+          }
+        } else {
+          // 组员退出，直接退就可以了
+          // 删除前确认
+            // 删除
           this.deleteMemberHelper(payload)
         }
       }
@@ -263,8 +318,9 @@ export default {
       this.deleteMemberHelper(this.currentGroupOwner)
       // 关闭对话
       this.CurrentlyDeletingLeader = false
+      this.discard()
     },
-    deleteMemberHelper: function(payload) {s
+    deleteMemberHelper: function(payload) {
       var toDelete = [];
       toDelete[0] = this.currentGroup.id
       toDelete[1] = payload.id
@@ -272,31 +328,91 @@ export default {
       this.resetCurrentGroup()
     },
     // 打开/关闭增加group的dialog
-    addGroupShown: function(){
-      this.CurrentlyAddingGroup = !this.CurrentlyAddingGroup
+    createGroupShown: function() {
+      this.CurrentlyCreatingGroup = !this.CurrentlyCreatingGroup
     },
     // 创建新的组并保存到firebase里面
-    createGroup: function(){
+    createGroup: function() {
       this.$store.dispatch('savegroup', this.newGroup)
       // 清除刚刚输入的痕迹
       this.ClearAddingGroup()
     },
+    // 输入group id,加入那个组
+    addIntoAGroup: function() {
+      var notFound = true;
+      // 搜索所有组并加入
+      this.$store.getters.getGroups.map((group) => {
+        // 若是找到了符合的组织
+        if (group.id === this.GroupIDGoingToAdd){
+          this.addIntoAGroupHelper(group)
+          notFound = false;
+          this.closeTheGroupNotFound()
+        }
+        if (notFound) {
+          this.GroupNotFound = true
+          this.CurrentlyAddingIntoAGroup = false
+          // -LSIMkoAkqvRYi5oLo9b
+        }
+      })
+      // 清除痕迹
+      this.GroupIDGoingToAdd = ''
+    },
+    addIntoAGroupHelper: function(group) {
+      // Check whether the user is already in the group
+      var isTheUserInThatGroup = false
+      for (var meme in group.members){
+        // I found you!
+        if(group.members[meme].uid === this.user.uid) {
+          isTheUserInThatGroup = true
+        }
+      }
+      // If the user is not already in the group
+      // Add him inside
+      if (!isTheUserInThatGroup){
+        // 为add member做准备
+        var toStore = []
+        // 塞入要加入的组织
+        toStore[0] = group
+        // 由于用户没有名字，需要用email当做名字
+        this.user.name = this.user.email
+        // 塞入用户
+        toStore[1] = this.user
+        // 飞翔吧！
+        this.$store.dispatch('addmember', toStore)
+        this.CurrentlyAddingIntoAGroup = false
+      } else {
+        // Otherwise, user is already in that group
+        alert('It looks like you are already in that group.')
+      }
+    },
+    closeTheGroupNotFound: function() {
+      this.GroupNotFound = false
+    },
+    // 掌控加入组的开关
+    addGroupShown: function() {
+      this.CurrentlyAddingIntoAGroup = !this.CurrentlyAddingIntoAGroup
+    },
+    // 清理
     ClearAddingGroup: function() {
       this.newGroup.name = ''
       this.newGroup.id = null
       this.newGroup.members = ''
-      this.addGroupShown()
+      this.createGroupShown()
     },
     // 当点击某人的名字时，在MainPage里展示他的卡片
+    // 通过将三元素传递到store里实现
     ShowHisCards: function(payload) {
       // set current
       this.setToCurrent(payload)
+      // leader presssed = false
+      this.$store.dispatch('setLeaderButton', false)
     },
     // 将被点击的当前组，当前人和他的卡片统统存入store
     setToCurrent: function(payload) {
+      this.currentMember = payload
       var currentToStore = []
-      currentToStore[0] = this.currentGroup
-      currentToStore[1] = payload
+      currentToStore[0] = this.currentGroupID
+      currentToStore[1] = payload.id
       this.$store.dispatch('setcurrent', currentToStore)
     }
   }

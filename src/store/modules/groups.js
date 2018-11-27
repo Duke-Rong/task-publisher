@@ -6,6 +6,7 @@ import { READ_GROUP,
   DELETE_MEMBER,
   SET_CURRENT,
   ADD_CARD,
+  LEADER_BUTTON,
   SET_USER} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
@@ -26,6 +27,8 @@ const state = {
   currentGroup: '',
   currentMember: '',
   currentCards: [],
+  // 是否按下了leader按钮
+  LeaderButtonPushed: false,
   // groups
   newgroup: {
     name: '',
@@ -70,20 +73,39 @@ const getters = {
   },
   getCurrentCards (state) {
     return state.currentCards
+  },
+  getLeaderButtonPushed (state) {
+    return state.LeaderButtonPushed
   }
 }
 
 const mutations = {
-  [SET_USER] (state, payload) {
-    state.currentUser = payload
-  },
   // 设置当前该项目的用户
   // call: 项目auth()加载后
   // 一旦决定用户，在关闭整个项目之前是不会自动更新的
+  [SET_USER] (state, payload) {
+    state.currentUser = payload
+  },
+  // 这玩意貌似会自动更新！
+  // 传入：group id, member id
   [SET_CURRENT] (state, payload) {
-    state.currentGroup = payload[0]
-    state.currentMember = payload[1]
-    state.currentCards = payload[1].cards
+    state.currentGroup = state.groups[payload[0]]
+    state.currentMember = state.currentGroup.members[payload[1]]
+    if (state.currentMember) {
+      state.currentCards = state.currentMember.cards
+    }
+  },
+  // 设置卡组成currentGroup内的所有members的卡组
+  [LEADER_BUTTON] (state, payload) {
+    /*
+    state.currentCards = []
+    for (var membs in state.currentGroup.members){
+      for (var cards in state.currentGroup.members[membs].cards){
+        state.currentCards[state.currentCards.length] = state.currentGroup.members[membs].cards[cards]
+      }
+    }
+    */
+    state.LeaderButtonPushed = payload
   },
   // 输入：groupID 输出：该group
   [READ_GROUP] (state, payload) {
@@ -118,11 +140,12 @@ const mutations = {
     updatess[state.newMember.id] = state.newMember
     db.ref('/groups/' + state.newgroup.id + '/members').update(updatess)
   },
-  // 输入卡号，删除群组
+  // 输入组号，删除群组
   [DELETE_GROUP] (state, payload) {
     groupsDB.child(payload).remove()
   },
   // 由Add传递。payload内含需要增加的组员和群id
+  // 传入：payload[0]是group, payload[1]是member
   [ADD_MEMBER] (state, payload) {
     // 获取新组员名字.
     state.newMember.name = payload[1].name
@@ -137,18 +160,24 @@ const mutations = {
   // 传入：组id和member id
   [DELETE_MEMBER] (state, payload) {
     db.ref('/groups/' + payload[0] + '/members').child(payload[1]).remove()
+    // If the member deleting is the same as the one in cards,
+    //  remove the current card
+    if(state.currentMember.id === payload[1]){
+      state.currentMember = null
+      state.currentCards = null
+    }
   },
   // 增加卡片，格式和增加member是一样的
   [ADD_CARD] (state, payload) {
     // 获取新组员名字.
-    state.newCard.name = payload[2].name
-    state.newCard.description = payload[2].description
+    state.newCard.name = payload.name
+    state.newCard.description = payload.description
     // 将其push进该组，并用同样的方法获取member id
-    state.newCard.id = db.ref('/groups/' + payload[0] + '/members/' + payload[1] + '/cards').push(state.newCard).key
+    state.newCard.id = db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').push(state.newCard).key
     // 替换掉没有id的members
     var updates = {}
     updates[state.newCard.id] = state.newCard
-    db.ref('/groups/' + payload[0] + '/members/' + payload[1] + '/cards').update(updates)
+    db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').update(updates)
   },
 
 
@@ -175,6 +204,9 @@ const actions = {
   setcurrent ({ commit }, payload) {
     commit(SET_CURRENT, payload)
   },
+  setLeaderButton ({ commit }, payload) {
+    commit(LEADER_BUTTON, payload)
+  },
   readgroup ({ commit }, payload) {
     commit(READ_GROUP, payload)
   },
@@ -188,7 +220,7 @@ const actions = {
   setgroup ({ commit }, payload) {
     commit(SET_GROUP, payload)
   },
-  setmember ({ commit }, payload) {
+  addmember ({ commit }, payload) {
     commit(ADD_MEMBER, payload)
   },
   deletemember ({ commit }, payload) {

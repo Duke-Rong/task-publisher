@@ -19,3 +19,6 @@ export const ADD_CARD = 'ADD_CARD'
 
 // For user
 export const SET_USER = 'SET_USER'
+
+// Others
+export const LEADER_BUTTON = 'LEADER_BUTTON'
