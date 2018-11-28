@@ -9,7 +9,7 @@ import { READ_GROUP,
   LEADER_BUTTON,
   SET_USER,
   SET_SORT_TYPE,
-  SORT_BY_IMPORTANCE} from '@/store/mutation-types'
+  ANTI_SORT} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -36,6 +36,8 @@ const state = {
   // 1: sort by importance
   // 2: sort by due time
   sortType: 0,
+  // 当anit-sort开启时，进行反向排序
+  anti_sort: false,
   // groups
   newgroup: {
     name: '',
@@ -91,7 +93,10 @@ const getters = {
   },
   getSortType (state) {
     return state.sortType
-  }
+  },
+  getAntiSort (state) {
+    return state.anti_sort
+  },
 }
 
 const mutations = {
@@ -200,10 +205,11 @@ const mutations = {
     updates[state.newCard.id] = state.newCard
     db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').update(updates)
   },
-  // Sort the cards in currentGroup by importance
-  [SORT_BY_IMPORTANCE] (state) {
-
+  // Set the anti sort
+  [ANTI_SORT] (state) {
+    state.anti_sort = !state.anti_sort
   },
+  // Set the sort type
   [SET_SORT_TYPE] (state, payload) {
     state.sortType = payload
   },
@@ -256,8 +262,8 @@ const actions = {
   addcard ({ commit }, payload) {
     commit(ADD_CARD, payload)
   },
-  sortByImportance ({ commit }) {
-    commit(SORT_BY_IMPORTANCE)
+  antisort ({ commit }) {
+    commit(ANTI_SORT)
   },
   setSortType ({ commit }, payload) {
     commit(SET_SORT_TYPE, payload)

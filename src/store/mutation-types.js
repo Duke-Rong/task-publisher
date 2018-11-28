@@ -22,7 +22,7 @@ export const SET_USER = 'SET_USER'
 
 //For sort
 export const SET_SORT_TYPE = 'SET_SORT_TYPE'
-export const SORT_BY_IMPORTANCE = 'SORT_BY_IMPORTANCE'
+export const ANTI_SORT = 'ANTI_SORT'
 
 // Others
 export const LEADER_BUTTON = 'LEADER_BUTTON'

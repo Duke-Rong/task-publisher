@@ -141,6 +141,7 @@ export default {
     // Sort the cards depending on which sort user wants
     sortTheCards(cardsToBeSort) {
       const sortType = this.$store.getters.getSortType
+      const antisort = this.$store.getters.getAntiSort
       // 由于不能直接对currentCards进行sort，
       // 要将其先置于一个可以sort的地方
       var tempCurrentCards = []
@@ -149,32 +150,31 @@ export default {
         tempCurrentCards[tempCurrentCards.length] = cardsToBeSort[cards]
       }
       // compare based on the sort type
+      // pay attention to anti-sort or not!
       function compare (a, b) {
         if (sortType === 1) {
           if (a.importance > b.importance) {
-            return -1
+            if (antisort) { return 1 } else { return -1 }
           }
           if (a.importance < b.importance) {
-            return 1
+            if (antisort) { return -1 } else { return 1 }
           }
-          return 0
         } else if (sortType === 2) {
           if (new Date(a.dueDate + ' ' + a.dueTimee) < new Date(b.dueDate + ' ' + b.dueTime)) {
-            return -1
+            if (antisort) { return 1 } else { return -1 }
           }
           if (new Date(a.dueDate + ' ' + a.dueTime) > new Date(b.dueDate + ' ' + b.dueTime)) {
-            return 1
+            if (antisort) { return -1 } else { return 1 }
           }
-          return 0
         } else if (sortType === 0) {
           if (a.addTime < b.addTime) {
-            return -1
+            if (antisort) { return 1 } else { return -1 }
           }
           if (a.addTime > b.addTime) {
-            return 1
+            if (antisort) { return -1 } else { return 1 }
           }
-          return 0
         }
+        return 0
       }
       tempCurrentCards.sort(compare)
       return tempCurrentCards

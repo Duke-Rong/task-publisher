@@ -7,6 +7,7 @@
     <button v-on:click="sortBy(1)">sortByImportance</button>
     <button v-on:click="sortBy(0)">sortByAddTime</button>
     <button v-on:click="sortBy(2)">sortByDueDate</button>
+    <button v-on:click="antisort()">anti-sort</button>
   </div>
 </template>
 
@@ -42,6 +43,9 @@ export default {
     },
     sortBy(payload) {
       this.$store.dispatch('setSortType', payload)
+    },
+    antisort() {
+      this.$store.dispatch('antisort')
     },
   }
 }
