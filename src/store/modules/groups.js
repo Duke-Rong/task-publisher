@@ -7,7 +7,9 @@ import { READ_GROUP,
   SET_CURRENT,
   ADD_CARD,
   LEADER_BUTTON,
-  SET_USER} from '@/store/mutation-types'
+  SET_USER,
+  SET_SORT_TYPE,
+  SORT_BY_IMPORTANCE} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -29,6 +31,11 @@ const state = {
   currentCards: [],
   // 是否按下了leader按钮
   LeaderButtonPushed: false,
+  // 这个按钮决定了用户希望进行何种sort
+  // 0: sort by add time, 即原始情况
+  // 1: sort by importance
+  // 2: sort by due time
+  sortType: 0,
   // groups
   newgroup: {
     name: '',
@@ -47,7 +54,12 @@ const state = {
   newCard: {
     id: '',
     name: '',
-    description: ''
+    description: '',
+    dueDate: '',
+    dueTime: '',
+    importance: '',
+    addTime: '',
+    finished: false
   }
 }
 
@@ -76,6 +88,9 @@ const getters = {
   },
   getLeaderButtonPushed (state) {
     return state.LeaderButtonPushed
+  },
+  getSortType (state) {
+    return state.sortType
   }
 }
 
@@ -143,6 +158,8 @@ const mutations = {
   // 输入组号，删除群组
   [DELETE_GROUP] (state, payload) {
     groupsDB.child(payload).remove()
+    state.currentMember = null
+    state.currentCards = null
   },
   // 由Add传递。payload内含需要增加的组员和群id
   // 传入：payload[0]是group, payload[1]是member
@@ -172,6 +189,10 @@ const mutations = {
     // 获取新组员名字.
     state.newCard.name = payload.name
     state.newCard.description = payload.description
+    state.newCard.dueDate = payload.dueDate
+    state.newCard.dueTime = payload.dueTime
+    state.newCard.importance = payload.importance
+    state.newCard.addTime = new Date()
     // 将其push进该组，并用同样的方法获取member id
     state.newCard.id = db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').push(state.newCard).key
     // 替换掉没有id的members
@@ -179,7 +200,13 @@ const mutations = {
     updates[state.newCard.id] = state.newCard
     db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').update(updates)
   },
+  // Sort the cards in currentGroup by importance
+  [SORT_BY_IMPORTANCE] (state) {
 
+  },
+  [SET_SORT_TYPE] (state, payload) {
+    state.sortType = payload
+  },
 
 
 
@@ -228,6 +255,12 @@ const actions = {
   },
   addcard ({ commit }, payload) {
     commit(ADD_CARD, payload)
+  },
+  sortByImportance ({ commit }) {
+    commit(SORT_BY_IMPORTANCE)
+  },
+  setSortType ({ commit }, payload) {
+    commit(SET_SORT_TYPE, payload)
   }
 }
 

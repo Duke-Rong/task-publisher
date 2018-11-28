@@ -2,6 +2,9 @@
   <div>
     {{ card.name }}
     {{ card.description }}
+    {{ card.dueDate }}
+    {{ card.dueTime }}
+    {{ card.importance }}
   </div>
 </template>
 

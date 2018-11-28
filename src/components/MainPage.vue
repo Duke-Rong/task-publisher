@@ -12,18 +12,18 @@
     </div>
 
     <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
+    <!-- sort仅对currentCards有效，对leader无效 -->
     <div
     v-show="currentShowingLeader">
       <div
       v-for="(members,memberIndex) in currentGroup.members"
       :key="memberIndex">
         Member: {{ members.name }}
+        <button v-on:click="sortByImportance()">SBI</button>
         <li
         v-for="(cards,cardsIndex) in members.cards"
         :key="cardsIndex">
-          {{ cards.name }}
-          {{ cards.description }}
-          <cards/>
+          <cards v-bind:card="cards"/>
         </li>
       </div>
     </div>
@@ -32,6 +32,9 @@
     v-model="currentAddingCards">
       Card name: <input type="text" v-model="newCard.name"><br>
       Card description: <input type="text" v-model="newCard.description"><br>
+      Card due Date: <input type="text" v-model="newCard.dueDate"><br>
+      Card due time: <input type="text" v-model="newCard.dueTime"><br>
+      Card importance: <input type="text" v-model="newCard.importance"><br>
       <button v-on:click="confirmAddingThisCard">OK</button>
     </v-dialog>
 
@@ -68,7 +71,12 @@ export default {
       newCard: {
         id: '',
         name: '',
-        description: ''
+        description: '',
+        dueDate: '',
+        dueTime: '',
+        importance: '',
+        addTime: '',
+        finished: false
       },
       // 这个开关决定了当前是否在增加cards
       currentAddingCards: false
@@ -93,7 +101,9 @@ export default {
     },
     currentCards() {
       if (this.$store.getters.getCurrentCards){
-        return this.$store.getters.getCurrentCards
+        // sort here
+        return this.sortTheCards(this.$store.getters.getCurrentCards)
+        // return this.$store.getters.getCurrentCards
       } else {
         return null
       }
@@ -128,6 +138,47 @@ export default {
       this.$store.dispatch('addcard', this.newCard)
       this.addCard()
     },
+    // Sort the cards depending on which sort user wants
+    sortTheCards(cardsToBeSort) {
+      const sortType = this.$store.getters.getSortType
+      // 由于不能直接对currentCards进行sort，
+      // 要将其先置于一个可以sort的地方
+      var tempCurrentCards = []
+      for (var cards in cardsToBeSort){
+        // 读取每张currentCards并将他塞入一个新建的array
+        tempCurrentCards[tempCurrentCards.length] = cardsToBeSort[cards]
+      }
+      // compare based on the sort type
+      function compare (a, b) {
+        if (sortType === 1) {
+          if (a.importance > b.importance) {
+            return -1
+          }
+          if (a.importance < b.importance) {
+            return 1
+          }
+          return 0
+        } else if (sortType === 2) {
+          if (new Date(a.dueDate + ' ' + a.dueTimee) < new Date(b.dueDate + ' ' + b.dueTime)) {
+            return -1
+          }
+          if (new Date(a.dueDate + ' ' + a.dueTime) > new Date(b.dueDate + ' ' + b.dueTime)) {
+            return 1
+          }
+          return 0
+        } else if (sortType === 0) {
+          if (a.addTime < b.addTime) {
+            return -1
+          }
+          if (a.addTime > b.addTime) {
+            return 1
+          }
+          return 0
+        }
+      }
+      tempCurrentCards.sort(compare)
+      return tempCurrentCards
+    },
     /**
      * 清除
      */
@@ -151,7 +202,12 @@ export default {
       this.newCard =  {
         id: '',
         name: '',
-        description: ''
+        description: '',
+        dueDate: '',
+        dueTime: '',
+        importance: '',
+        addTime: '',
+        finished: false
       }
     }
   }

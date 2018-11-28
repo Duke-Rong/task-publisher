@@ -4,6 +4,9 @@
     This is header...maybe
     <br>
     <button v-on:click="Leader">Leader</button>
+    <button v-on:click="sortBy(1)">sortByImportance</button>
+    <button v-on:click="sortBy(0)">sortByAddTime</button>
+    <button v-on:click="sortBy(2)">sortByDueDate</button>
   </div>
 </template>
 
@@ -36,7 +39,10 @@ export default {
   methods: {
     Leader() {
       this.$store.dispatch('setLeaderButton', true)
-    }
+    },
+    sortBy(payload) {
+      this.$store.dispatch('setSortType', payload)
+    },
   }
 }
 </script>

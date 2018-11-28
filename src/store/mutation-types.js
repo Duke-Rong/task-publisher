@@ -20,5 +20,9 @@ export const ADD_CARD = 'ADD_CARD'
 // For user
 export const SET_USER = 'SET_USER'
 
+//For sort
+export const SET_SORT_TYPE = 'SET_SORT_TYPE'
+export const SORT_BY_IMPORTANCE = 'SORT_BY_IMPORTANCE'
+
 // Others
 export const LEADER_BUTTON = 'LEADER_BUTTON'

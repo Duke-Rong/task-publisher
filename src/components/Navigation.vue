@@ -146,8 +146,14 @@ export default {
       },
       // 新增的卡片
       newCard: {
+        id:'',
         name: '',
-        description: ''
+        description: '',
+        dueDate: '',
+        dueTime: '',
+        importance: '',
+        addTime: '',
+        finished: false
       },
       // 当前正在修改的组，由set()传递
       currentGroup: {},
@@ -324,6 +330,7 @@ export default {
       var toDelete = [];
       toDelete[0] = this.currentGroup.id
       toDelete[1] = payload.id
+      console.log(toDelete)
       this.$store.dispatch('deletemember', toDelete)
       this.resetCurrentGroup()
     },
