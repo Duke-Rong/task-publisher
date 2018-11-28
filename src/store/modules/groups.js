@@ -276,7 +276,6 @@ const mutations = {
   },
   // Clear everything
   [LOG_OUT] (state) {
-    state.groups = [],
     state.currentUser = '',
     state.currentGroup = '',
     state.currentMember = '',

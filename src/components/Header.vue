@@ -55,7 +55,7 @@ export default {
       return this.$store.getters.getCurrentCardsAvailable
     },
     headerShown () {
-      if (this.$store.getters.getCurrentUser)
+      if (this.$store.getters.getCurrentGroup)
         return true
       return false
     }
