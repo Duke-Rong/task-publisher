@@ -447,7 +447,7 @@ export default {
     confirmLogout: function() {
       this.Logout = false
       this.$store.dispatch('logout')
-      // firebase.auth().signOut()
+      firebase.auth().signOut()
     }
   }
 }
