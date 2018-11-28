@@ -61,6 +61,8 @@ const state = {
     dueTime: '',
     importance: '',
     addTime: '',
+    ownerUid: '',
+    ownerName: '',
     finished: false
   }
 }
@@ -192,12 +194,14 @@ const mutations = {
   // 增加卡片，格式和增加member是一样的
   [ADD_CARD] (state, payload) {
     // 获取新组员名字.
-    state.newCard.name = payload.name
-    state.newCard.description = payload.description
-    state.newCard.dueDate = payload.dueDate
-    state.newCard.dueTime = payload.dueTime
-    state.newCard.importance = payload.importance
+    state.newCard.name = payload[0].name
+    state.newCard.description = payload[0].description
+    state.newCard.dueDate = payload[0].dueDate
+    state.newCard.dueTime = payload[0].dueTime
+    state.newCard.importance = payload[0].importance
     state.newCard.addTime = new Date()
+    state.newCard.ownerName = payload[1].name
+    state.newCard.ownerUid = payload[1].uid
     // 将其push进该组，并用同样的方法获取member id
     state.newCard.id = db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').push(state.newCard).key
     // 替换掉没有id的members

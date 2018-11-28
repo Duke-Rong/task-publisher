@@ -135,7 +135,10 @@ export default {
       this.currentAddingCards = !this.currentAddingCards
     },
     confirmAddingThisCard() {
-      this.$store.dispatch('addcard', this.newCard)
+      var toStore = []
+      toStore[0] = this.newCard
+      toStore[1] = this.currentMember
+      this.$store.dispatch('addcard', toStore)
       this.addCard()
     },
     // Sort the cards depending on which sort user wants
@@ -207,6 +210,8 @@ export default {
         dueTime: '',
         importance: '',
         addTime: '',
+        ownerUid: '',
+        ownerName: '',
         finished: false
       }
     }

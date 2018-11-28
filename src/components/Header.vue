@@ -8,6 +8,7 @@
     <button v-on:click="sortBy(0)">sortByAddTime</button>
     <button v-on:click="sortBy(2)">sortByDueDate</button>
     <button v-on:click="antisort()">anti-sort</button>
+    <button v-on:click="antisort()">calendar</button>
   </div>
 </template>
 
