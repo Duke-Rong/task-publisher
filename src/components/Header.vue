@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="headerShown">
     <br>
     This is header...maybe
     <br>
@@ -53,6 +53,11 @@ export default {
     // If current cards are null, some buttons shall not show
     currentCardsAvailable() {
       return this.$store.getters.getCurrentCardsAvailable
+    },
+    headerShown () {
+      if (this.$store.getters.getCurrentUser)
+        return true
+      return false
     }
   },
   methods: {

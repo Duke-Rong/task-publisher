@@ -35,6 +35,13 @@ export default {
   created () {
     this.$store.dispatch('setPageRef', groupsDB)
   },
+  computed: {
+    currentUser () {
+      if (this.$store.getters.getCurrentUser)
+        return true
+      return false
+    }
+  }
 }
 </script>
 

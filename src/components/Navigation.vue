@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="navigationShown">
     <div v-on:click="logout()">Hello,</div>
     <div v-on:click="logout()">{{ user.email }}</div>
     <br>
@@ -137,7 +137,7 @@ export default {
   data() {
     return {
       // 当前用户的用户名
-      theuser: '',
+      user: '',
       // groups是否呈打开趋势
       groupsExtendSwitch: [],
       // 被增加的组
@@ -218,16 +218,13 @@ export default {
         return newgroup
       })
     },
-    user: {
-     // getter
-      get: function () {
-        this.theuser = this.$store.getters.getCurrentUser
-        return this.theuser
-      },
-      // setter
-      set: function (newValue) {
-        this.theuser = newValue
-      }
+    theuser () {
+        this.user = this.$store.getters.getCurrentUser
+    },
+    navigationShown () {
+      if (this.$store.getters.getCurrentUser)
+        return true
+      return false
     }
   },
   // 当页面跳转的时候，加载user
@@ -448,8 +445,9 @@ export default {
       this.Logout = !this.Logout
     },
     confirmLogout: function() {
-      this.reallyLogout = !this.reallyLogout
-      firebase.auth().signOut()
+      this.Logout = false
+      this.$store.dispatch('logout')
+      // firebase.auth().signOut()
     }
   }
 }

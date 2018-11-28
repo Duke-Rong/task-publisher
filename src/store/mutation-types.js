@@ -29,3 +29,4 @@ export const ANTI_SORT = 'ANTI_SORT'
 // Others
 export const LEADER_BUTTON = 'LEADER_BUTTON'
 export const CHANGE_FINISH_VISION= 'CHANGE_FINISH_VISION'
+export const LOG_OUT = 'LOG_OUT'

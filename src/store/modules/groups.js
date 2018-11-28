@@ -12,7 +12,8 @@ import { READ_GROUP,
   SET_USER,
   SET_SORT_TYPE,
   ANTI_SORT,
-  CHANGE_FINISH_VISION} from '@/store/mutation-types'
+  CHANGE_FINISH_VISION,
+  LOG_OUT} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -126,11 +127,27 @@ const mutations = {
   // 这玩意貌似会自动更新！
   // 传入：group id, member id
   [SET_CURRENT] (state, payload) {
-    state.currentGroup = state.groups[payload[0]]
-    state.currentMember = state.currentGroup.members[payload[1]]
-    if (state.currentMember) {
-      state.currentCards = state.currentMember.cards
-      state.currentCardsAvailable = true
+    if(state.groups[payload[0]]) {
+      state.currentGroup = state.groups[payload[0]]
+      if (state.currentGroup.members[payload[1]]) {
+        state.currentMember = state.currentGroup.members[payload[1]]
+        if (state.currentMember) {
+          state.currentCards = state.currentMember.cards
+          state.currentCardsAvailable = true
+        } else {
+          state.currentCards = null
+          state.currentCardsAvailable = false
+        }
+      } else {
+        state.currentMember = null
+        state.currentCards = null
+        state.currentCardsAvailable = false
+      }
+    } else {
+      state.currentGroup = null
+      state.currentMember = null
+      state.currentCards = null
+      state.currentCardsAvailable = false
     }
   },
   // 设置卡组成currentGroup内的所有members的卡组
@@ -257,7 +274,44 @@ const mutations = {
   [CHANGE_FINISH_VISION] (state) {
     state.finishVision = !state.finishVision
   },
-
+  // Clear everything
+  [LOG_OUT] (state) {
+    state.groups = [],
+    state.currentUser = '',
+    state.currentGroup = '',
+    state.currentMember = '',
+    state.currentCards = [],
+    state.currentCardsAvailable = false,
+    state.LeaderButtonPushed = false,
+    state.sortType = 0,
+    state.anti_sort = false,
+    state.finishVision = false,
+    state.newgroup = {
+      name: '',
+      id: '',
+      groupLeader: '',
+      members: []
+    },
+    state.newMember = {
+      name: '',
+      id: '',
+      uid: '',
+      cards: []
+    },
+    state.newCard = {
+      id: '',
+      name: '',
+      description: '',
+      dueDate: '',
+      dueTime: '',
+      importance: '',
+      addTime: '',
+      ownerUid: '',
+      ownerName: '',
+      ownerIDInGroup: '',
+      finished: false
+    }
+  },
 
 
 
@@ -320,6 +374,9 @@ const actions = {
   },
   changeFinishVision ({ commit }) {
     commit(CHANGE_FINISH_VISION)
+  },
+  logout ({ commit }) {
+    commit(LOG_OUT)
   },
 }
 
