@@ -31,6 +31,8 @@ const state = {
   currentGroup: '',
   currentMember: '',
   currentCards: [],
+  // 是否有currentCards
+  currentCardsAvailable: false,
   // 是否按下了leader按钮
   LeaderButtonPushed: false,
   // 这个按钮决定了用户希望进行何种sort
@@ -109,6 +111,9 @@ const getters = {
   getFinish (state) {
     return state.finishVision
   },
+  getCurrentCardsAvailable (state) {
+    return state.currentCardsAvailable
+  },
 }
 
 const mutations = {
@@ -125,6 +130,7 @@ const mutations = {
     state.currentMember = state.currentGroup.members[payload[1]]
     if (state.currentMember) {
       state.currentCards = state.currentMember.cards
+      state.currentCardsAvailable = true
     }
   },
   // 设置卡组成currentGroup内的所有members的卡组
@@ -177,6 +183,7 @@ const mutations = {
     groupsDB.child(payload).remove()
     state.currentMember = null
     state.currentCards = null
+    state.currentCardsAvailable = false
   },
   // 由Add传递。payload内含需要增加的组员和群id
   // 传入：payload[0]是group, payload[1]是member
@@ -199,6 +206,7 @@ const mutations = {
     if(state.currentMember.id === payload[1]){
       state.currentMember = null
       state.currentCards = null
+      state.currentCardsAvailable = false
     }
   },
   // 增加卡片，格式和增加member是一样的

@@ -3,20 +3,31 @@
     <br>
     This is header...maybe
     <br>
-    <button v-on:click="Leader">Leader</button>
-    <button v-on:click="sortBy(1)">sortByImportance</button>
-    <button v-on:click="sortBy(0)">sortByAddTime</button>
-    <button v-on:click="sortBy(2)">sortByDueDate</button>
-    <button v-on:click="antisort()">anti-sort</button>
-    <button v-on:click="calendar()">calendar</button>
-    <button v-on:click="finish()">Finish Tasks</button>
-    <button v-on:click="finish()">Ongoing Tasks</button>
+    <button v-on:click="Leader" v-show="currentCardsAvailable">Leader</button>
+    <button v-on:click="sortBy(1)" v-show="currentCardsAvailable">sortByImportance</button>
+    <button v-on:click="sortBy(0)" v-show="currentCardsAvailable">sortByAddTime</button>
+    <button v-on:click="sortBy(2)" v-show="currentCardsAvailable">sortByDueDate</button>
+    <button v-on:click="antisort()" v-show="currentCardsAvailable">anti-sort</button>
+    <button v-on:click="calendar()" v-show="currentCardsAvailable">calendar</button>
+    <button v-on:click="finish()" v-show="currentCardsAvailable">Finish Tasks</button>
+    <button v-on:click="finish()" v-show="currentCardsAvailable">Ongoing Tasks</button>
+    <button v-on:click="helpVision()">Help</button>
+
+    <v-dialog
+    v-model="help">
+      广告位招租！
+    </v-dialog>
   </div>
 </template>
 
 <script>
 export default {
   name: 'Header',
+  data() {
+    return {
+      help: false
+    }
+  },
   computed: {
     currentGroup() {
       if (this.$store.getters.getCurrentGroup){
@@ -38,6 +49,10 @@ export default {
       } else {
         return null
       }
+    },
+    // If current cards are null, some buttons shall not show
+    currentCardsAvailable() {
+      return this.$store.getters.getCurrentCardsAvailable
     }
   },
   methods: {
@@ -55,7 +70,10 @@ export default {
       this.$store.dispatch('changeFinishVision')
     },
     calendar() {
-
+      this.$router.push('/calendar')
+    },
+    helpVision() {
+      this.help = !this.help
     }
   }
 }
