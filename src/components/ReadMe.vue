@@ -112,7 +112,7 @@ setTimeout(() => {
 
     <!-- 增加成员时出现的面板 -->
     <v-dialog
-    v-model="CurrentlyAddingMemberToOneGroup"
+    v-model="CurrentlyManagingTheGroup"
     max-width="1000px">
         member name: <input type="text" v-model="newMember.name"><br>
         member uid: <input type="text" v-model="newMember.uid"><br>
@@ -157,7 +157,7 @@ export default {
       // 当前正在修改的member
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
-      CurrentlyAddingMemberToOneGroup: false,
+      CurrentlyManagingTheGroup: false,
       // 这个开关决定了增加卡片的dialoag的出现与否
       CurrentlyAddingCardToOneMember: false,
       // 当增加members时传递到store里的内容
@@ -190,7 +190,7 @@ export default {
   methods: {
     // 将组群绑定到currentGroup里，并打开修改页
     set: function(payload) {
-        this.CurrentlyAddingMemberToOneGroup = true
+        this.CurrentlyManagingTheGroup = true
         this.currentGroup = payload
     },
     // 修改组群并上传，然后清除痕迹
@@ -204,7 +204,7 @@ export default {
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
       this.currentGroup = null
-      this.CurrentlyAddingMemberToOneGroup = false
+      this.CurrentlyManagingTheGroup = false
       this.newMember = { name:'', uid:'' }
       this.membersAndGroupToStore = []
     },

@@ -1,41 +1,85 @@
 <template>
   <div v-show="navigationShown">
-    <div v-on:click="logout()">Hello,</div>
-    <div v-on:click="logout()">{{ user.email }}</div>
-    <br>
-    <button v-on:click="addGroupShown()">Add into a group</button>
-    <button v-on:click="createGroupShown()">Create group</button>
-    <!-- for loop. 展示所有groups里面的卡 -->
-    <div v-for="(groups,index) in groupsInDatabase"
-        :key="index">
+    <!-- everything in a card -->
+    <v-card class="navigation">
+      <br>
+      <!-- User profile -->
+      <v-card>
+        <div v-on:click="logout()" v-if="!commaShown">Hello</div>
+        <!-- comma the cheater -->
+        <div v-on:click="logout()"  v-else>Hello,</div>
+        <div v-on:click="logout()">{{ user.email }}</div>
+      </v-card>
+
+      <br>
+
+      <!-- for loop. 展示所有groups里面的卡 -->
+      <v-card v-for="(groups,index) in groupsInDatabase"
+      :key="index">
         <!-- 此处进行筛选 -->
         <!-- 由于每一个group里相同的member只有一个，因此每次组只会显示一次 -->
-        <div v-for="(members,indxxx) in groups.members"
-             :key="indxxx"
-             v-if="members.uid === user.uid">
-          -----------------------------------
-          <br>
-          <p v-on:click="changeGroupExtensionVisibility(groups,index)"> {{ groups.name }}</p>
-          <button v-on:click="set(groups,index)">Set</button>
-            <div v-show="groupsExtendSwitch[index]">
+        <v-card v-for="(members,indxxx) in groups.members"
+        :key="indxxx"
+        v-if="members.uid === user.uid">
+          <!-- 显示属于user的卡片 -->
+          <v-card>
+            <span v-on:click="changeGroupExtensionVisibility(groups,index)">
+              {{ groups.name }}
+            </span>
+              <v-btn icon v-on:click="set(groups,index)">
+                  <v-icon>toc</v-icon>
+              </v-btn>
+            <v-card-text v-show="groupsExtendSwitch[index]">
               <!-- 展示组下所有成员-->
               <li
-                 v-for="(members,indx) in groups.members"
-                 :key="indx"
-                 v-on:click="ShowHisCards(members)">
+              v-for="(members,indx) in groups.members"
+              :key="indx"
+              v-on:click="ShowHisCards(members)">
                 <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
               </li>
-            </div>
-        </div>
-    </div>
+            </v-card-text>
+          </v-card>
+        </v-card>
+      </v-card>
 
-    <div v-show="commaShown">,</div>
-    <!-- 增加成员时出现的面板 -->
+      <br>
+
+      <!-- add group and create group button -->
+      <v-card>
+
+        <v-btn color="primary" small dark
+        v-on:click="addGroupShown()">
+          <v-icon >add</v-icon>
+        </v-btn> Add into a group
+
+        <br>
+
+        <v-btn color="primary" small dark
+        v-on:click="createGroupShown()">
+            <v-icon >add</v-icon>
+        </v-btn> Create a group
+
+      </v-card>
+
+    </v-card>
+
+
+
+
+    <!-- Manage group时出现的对话 -->
     <v-dialog
-    v-model="CurrentlyAddingMemberToOneGroup"
+    v-model="CurrentlyManagingTheGroup"
     max-width="1000px">
-        <input type="text" v-model="currentGroup.name"><br>
-        <p v-bind:title="'Give this group id to your member so they can join your group!'"> Group ID: {{ currentGroup.id }} </p>
+      <v-card>
+        <div v-if="currentGroup.groupLeader === user.uid">
+          Group name: <input type="text" v-model="currentGroup.name"><br>
+        </div>
+        <div v-else>
+          Group name: {{ currentGroup.name }}
+        </div>
+        <!-- 当user = group leader时才会出现group id -->
+        <p v-if="currentGroup.groupLeader === user.uid"
+        v-bind:title="'Give this group id to your member so they can join your group!'"> Group ID: {{ currentGroup.id }} </p>
           <!-- group members -->
           <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
                 :key="membersShownInManageTheGroup">
@@ -46,17 +90,21 @@
                 v-if="members.uid !== user.uid">
                 {{ members.name }}
                 <!-- 当用户是组长时，显示删除组员按钮 -->
-                <button
+                <v-btn icon
                 v-if="user.uid === currentGroup.groupLeader"
-                v-on:click="deleteMember(members)">delete</button>
+                v-on:click="deleteMember(members)">
+                  <v-icon>delete</v-icon>
+                </v-btn>
 
                 </div>
                 <!-- 当组员名是当前用户时，显示input好修改名字 -->
                 <div v-else>
                   <input v-model="members.name">
                   <!-- 当用户是组员时，出现退出按钮 -->
-                  <button
-                  v-on:click="quit(members)">quit</button>
+                  <v-btn icon
+                  v-on:click="quit(members)">
+                    <v-icon>cancel</v-icon>
+                  </v-btn>
                 </div>
                 <br>
               </li>
@@ -64,45 +112,69 @@
         v-if="user.uid === currentGroup.groupLeader">
         member name: <input type="text" v-model="newMember.name"><br>
         member uid: <input type="text" v-model="newMember.uid"><br>
-        <button v-on:click="confirmChange">OK</button>
         <button v-on:click="addMember">Add member</button>
         </div>
-        <button v-on:click="discard">Close</button>
+        <v-btn color="primary" small dark
+        v-on:click="confirmChange">
+          CONFIRM CHANGE
+        </v-btn>
+        <v-btn color="red" small dark
+        v-on:click="discard">
+          CLOSE
+        </v-btn>
+
+      </v-card>
     </v-dialog>
 
     <!-- 组长退出时候发生的对话 -->
     <v-dialog
     v-model="CurrentlyDeletingLeader">
-      Please choose the new Group Leader:
-      <!-- 此处用v-ratio选择 -->
-      <!-- 显示当前以外的人的名字 -->
-      <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
-          :key="membersShownInManageTheGroup"
-          v-if="members.uid !== currentGroup.groupLeader">
-          {{ members.name }}
-          <button v-on:click="exchangeLeader(members)">ok</button>
-      </li>
+      <v-card>
+        <v-card-title>
+          Please choose the new Group Leader:
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-radio-group v-model="newLeader">
+            <div v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
+            :key="membersShownInManageTheGroup"
+            v-if="members.uid !== currentGroup.groupLeader">
+              <v-radio :label="members.name" :value="members"></v-radio>
+            </div>
+          </v-radio-group>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-btn color="blue darken-1" flat @click="CurrentlyDeletingLeader = false">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click="exchangeLeader">Confirm</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
 
     <!-- 创建组时发生的对话 -->
     <v-dialog
     v-model="CurrentlyCreatingGroup">
-      <p>Create a new group</p>
-      Group name :
-      <input type="text" v-model="newGroup.name"><br>
-      <br>
-      <button v-on:click="createGroup">create</button>
+      <v-card>
+        <p>Create a new group</p>
+        Group name :
+        <input type="text" v-model="newGroup.name"><br>
+        <br>
+        <button v-on:click="createGroup">create</button>
+        <button @click="CurrentlyCreatingGroup=false">close</button>
+      </v-card>
     </v-dialog>
 
     <!-- 加入组时发生的对话 -->
     <v-dialog
     v-model="CurrentlyAddingIntoAGroup">
-      <p>Please enter the group ID:</p>
-      Group id :
-      <input type="text" v-model="GroupIDGoingToAdd"><br>
-      <button v-on:click="addIntoAGroup">enter</button>
-      <button v-on:click="addGroupShown">close</button>
-      <p>Ask your group leader for the group id</p>
+      <v-card>
+        <p>Please enter the group ID:</p>
+        Group id :
+        <input type="text" v-model="GroupIDGoingToAdd"><br>
+        <button v-on:click="addIntoAGroup">enter</button>
+        <button @click="CurrentlyAddingIntoAGroup = false">close</button>
+        <p>Ask your group leader for the group id</p>
+      </v-card>
     </v-dialog>
 
     <!-- 组织找不到时发生的对话 -->
@@ -175,11 +247,13 @@ export default {
       // 只有在被点击到名字后才会更新进store
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
-      CurrentlyAddingMemberToOneGroup: false,
+      CurrentlyManagingTheGroup: false,
       // 这个开关决定了增加卡片的dialoag的出现与否
       CurrentlyAddingCardToOneMember: false,
       // 这个开关决定了决定新组长的dialoag的出现与否
       CurrentlyDeletingLeader: false,
+      // 新的组长是谁
+      newLeader: '',
       // 这个开关决定了决定ACreate group的dialoag的出现与否
       CurrentlyCreatingGroup: false,
       // 这个开关决定了决定Add into group的dialoag的出现与否
@@ -246,7 +320,7 @@ export default {
   methods: {
     // 将组群绑定到currentGroup里，并打开修改页
     set: function(payload,id) {
-        this.CurrentlyAddingMemberToOneGroup = true
+        this.CurrentlyManagingTheGroup = true
         this.currentGroupID = id
         this.resetCurrentGroup()
         // 同时，搜索group owner的在群里的id并保存在currentGroupOwner内
@@ -282,7 +356,7 @@ export default {
     },
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
-      this.CurrentlyAddingMemberToOneGroup = false
+      this.CurrentlyManagingTheGroup = false
       this.clearMember()
     },
     // 清理members添加的痕迹
@@ -335,15 +409,16 @@ export default {
       }
     },
     // 指定新的群主
-    exchangeLeader: function(payload) {
+    exchangeLeader: function() {
+      // 关闭对话
+      this.CurrentlyDeletingLeader = false
+      this.CurrentlyManagingTheGroup = false
       // 新群主被传入。将他变成群主
-      this.currentGroup.groupLeader = payload.uid
+      this.currentGroup.groupLeader = this.newLeader.uid
       // 升级群的群主
       this.$store.dispatch('setgroup', this.currentGroup)
       // 自己退出
       this.deleteMemberHelper(this.currentGroupOwner)
-      // 关闭对话
-      this.CurrentlyDeletingLeader = false
       this.discard()
     },
     deleteMemberHelper: function(payload) {
@@ -455,4 +530,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+    .navigation {
+        position: fixed;
+        width: 25%;
+        height: 100%;
+        top: 0px;
+        background-color: gold;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
 </style>

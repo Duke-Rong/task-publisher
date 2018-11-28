@@ -5,6 +5,8 @@ import App from './App'
 // vuetify
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
+// v-icon
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 // router
 import router from './router'
 // 如果不import store则根本不使用store
@@ -14,6 +16,9 @@ import './services/firebase.conf'
 import firebase from 'firebase'
 
 Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  iconfont: 'mdi'
+})
 Vue.config.silent = false
 Vue.config.performance = true
 Vue.config.productionTip = true

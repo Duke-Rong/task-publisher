@@ -10,7 +10,7 @@
         fluid>
         <v-layout row >
           <div v-if="user">
-            <v-flex xs6>
+            <v-flex xs12>
               <navigation/>
             </v-flex>
             <v-flex xs12>
@@ -39,7 +39,7 @@ export default {
   name: 'App',
   data () {
     return {
-      user: false
+      user: true
     }
   },
     // Combine firebase with this project
@@ -60,6 +60,7 @@ export default {
   },
   updated () {
     this.user = true
+    console.log(this.user)
   }
 
 }
