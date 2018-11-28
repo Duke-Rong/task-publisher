@@ -1,8 +1,7 @@
 <template>
   <div>
-    Hello,
-    <br>
-    {{ user.email }}
+    <div v-on:click="logout()">Hello,</div>
+    <div v-on:click="logout()">{{ user.email }}</div>
     <br>
     <button v-on:click="addGroupShown()">Add into a group</button>
     <button v-on:click="createGroupShown()">Create group</button>
@@ -118,6 +117,14 @@
       <button v-on:click="closeTheGroupNotFound">close</button>
     </v-dialog>
 
+    <!-- 登出时的对话 -->
+    <v-dialog
+    v-model="Logout">
+      Do you really want to log out?
+      <button v-on:click="confirmLogout()">yes</button>
+      <button v-on:click="logout()">no</button>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -179,6 +186,8 @@ export default {
       CurrentlyAddingIntoAGroup: false,
       // 这个开关决定了决定group not found的dialoag的出现与否
       GroupNotFound: false,
+      // 这个开关决定了决定log out的dialoag的出现与否
+      Logout: false,
       // 这个值保存了想加入的group
       GroupIDGoingToAdd: '',
       // 当增加members时传递到store里的内容
@@ -217,6 +226,7 @@ export default {
   // 使用用户的email作为名字
   // 仅在刚刚打开页面时使用
   beforeUpdate() {
+    console.log('beforeUpdate')
     this.user = firebase.auth().currentUser
   },
   updated() {
@@ -423,6 +433,13 @@ export default {
       currentToStore[0] = this.currentGroupID
       currentToStore[1] = payload.id
       this.$store.dispatch('setcurrent', currentToStore)
+    },
+    logout: function() {
+      this.Logout = !this.Logout
+    },
+    confirmLogout: function() {
+      this.reallyLogout = !this.reallyLogout
+      firebase.auth().signOut()
     }
   }
 }
