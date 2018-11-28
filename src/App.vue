@@ -9,15 +9,20 @@
       <v-container
         fluid>
         <v-layout row >
-          <v-flex xs6>
-            <navigation/>
-          </v-flex>
-          <v-flex xs12>
+          <div v-if="user">
+            <v-flex xs6>
+              <navigation/>
+            </v-flex>
+            <v-flex xs12>
+              <router-view/>
+            </v-flex>
+            <v-flex xs12>
+              <Header/>
+            </v-flex>
+          </div>
+          <div v-else>
             <router-view/>
-          </v-flex>
-          <v-flex xs12>
-            <Header/>
-          </v-flex>
+          </div>
         </v-layout>
       </v-container>
     </v-content>
@@ -28,9 +33,15 @@
 import Navigation from '@/components/Navigation'
 import Header from '@/components/Header'
 import { groupsDB } from '@/services/firebase.conf'
+import firebase from 'firebase';
 export default {
   components: { Navigation, Header },
   name: 'App',
+  data () {
+    return {
+      user: false
+    }
+  },
     // Combine firebase with this project
   created () {
     this.$store.dispatch('setPageRef', groupsDB)
@@ -40,8 +51,17 @@ export default {
       if (this.$store.getters.getCurrentUser)
         return true
       return false
+    },
+    logIn () {
+      if (this.$store.getters.getCurrentUser)
+        this.user = true
+      this.user = false
     }
+  },
+  updated () {
+    this.user = true
   }
+
 }
 </script>
 

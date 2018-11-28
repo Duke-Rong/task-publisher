@@ -68,7 +68,7 @@ export default {
         width: 100%;
         height: 100%;
         top: 0px;
-        background-image: url("../assets/logo.png");
+        background-image: url("../assets/background.jpg");
         background-repeat: no-repeat;
         background-size: 100% 100%;
     }
