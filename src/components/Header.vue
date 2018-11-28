@@ -8,7 +8,9 @@
     <button v-on:click="sortBy(0)">sortByAddTime</button>
     <button v-on:click="sortBy(2)">sortByDueDate</button>
     <button v-on:click="antisort()">anti-sort</button>
-    <button v-on:click="antisort()">calendar</button>
+    <button v-on:click="calendar()">calendar</button>
+    <button v-on:click="finish()">Finish Tasks</button>
+    <button v-on:click="finish()">Ongoing Tasks</button>
   </div>
 </template>
 
@@ -49,6 +51,12 @@ export default {
     antisort() {
       this.$store.dispatch('antisort')
     },
+    finish() {
+      this.$store.dispatch('changeFinishVision')
+    },
+    calendar() {
+
+    }
   }
 }
 </script>

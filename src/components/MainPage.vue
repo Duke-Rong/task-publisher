@@ -6,8 +6,10 @@
       <button v-on:click="addCard()">Add</button>
       <li
       v-for="(cards,cardsIndex) in currentCards"
-      :key="cardsIndex">
+      :key="cardsIndex"
+      v-show="cards.finished === currentShowingFinished">
         <cards v-bind:card="cards"/>
+        <br>
       </li>
     </div>
 
@@ -17,7 +19,8 @@
     v-show="currentShowingLeader">
       <li
       v-for="(cards,cardsIndex) in currentCards"
-      :key="cardsIndex">
+      :key="cardsIndex"
+      v-show="cards.finished === currentShowingFinished">
         Assigned to: {{ cards.ownerName }}
         <cards v-bind:card="cards"/>
       </li>
@@ -71,6 +74,9 @@ export default {
         dueTime: '',
         importance: '',
         addTime: '',
+        ownerUid: '',
+        ownerName: '',
+        ownerIDInGroup: '',
         finished: false
       },
       // 这个开关决定了当前是否在增加cards
@@ -106,7 +112,11 @@ export default {
     // 这个开关决定了是否按下了leader按钮
     currentShowingLeader() {
       return this.$store.getters.getLeaderButtonPushed
-    }
+    },
+    // 这个开关决定了是展示完成的tasks还是未完成的tasks
+    currentShowingFinished() {
+      return this.$store.getters.getFinish
+    },
   },
   watch: {
     /**
@@ -207,6 +217,7 @@ export default {
         addTime: '',
         ownerUid: '',
         ownerName: '',
+        ownerIDInGroup: '',
         finished: false
       }
     }

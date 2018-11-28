@@ -7,10 +7,12 @@ import { READ_GROUP,
   SET_CURRENT,
   ADD_CARD,
   SET_CURRENT_CARD_TO_LEADER_FORM,
+  UPDATE_CARD,
   LEADER_BUTTON,
   SET_USER,
   SET_SORT_TYPE,
-  ANTI_SORT} from '@/store/mutation-types'
+  ANTI_SORT,
+  CHANGE_FINISH_VISION} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -38,6 +40,10 @@ const state = {
   sortType: 0,
   // 当anit-sort开启时，进行反向排序
   anti_sort: false,
+  // 当finishVision开启时，显示完成的tasks
+  // 当finishVision关闭时，显示未完成的tasks
+  // control the vision of Calendar and MainPage
+  finishVision: false,
   // groups
   newgroup: {
     name: '',
@@ -63,6 +69,7 @@ const state = {
     addTime: '',
     ownerUid: '',
     ownerName: '',
+    ownerIDInGroup: '',
     finished: false
   }
 }
@@ -98,6 +105,9 @@ const getters = {
   },
   getAntiSort (state) {
     return state.anti_sort
+  },
+  getFinish (state) {
+    return state.finishVision
   },
 }
 
@@ -202,6 +212,7 @@ const mutations = {
     state.newCard.addTime = new Date()
     state.newCard.ownerName = payload[1].name
     state.newCard.ownerUid = payload[1].uid
+    state.newCard.ownerIDInGroup = payload[1].id
     // 将其push进该组，并用同样的方法获取member id
     state.newCard.id = db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').push(state.newCard).key
     // 替换掉没有id的members
@@ -220,6 +231,13 @@ const mutations = {
     }
     state.currentCards = updates
   },
+  // 传入：card.id
+  // 修改current group的所属member的该卡片
+  [UPDATE_CARD] (state, payload) {
+    var updates = {}
+    updates[payload.id] = payload
+    db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').update(updates)
+  },
   // Set the anti sort
   [ANTI_SORT] (state) {
     state.anti_sort = !state.anti_sort
@@ -227,6 +245,9 @@ const mutations = {
   // Set the sort type
   [SET_SORT_TYPE] (state, payload) {
     state.sortType = payload
+  },
+  [CHANGE_FINISH_VISION] (state) {
+    state.finishVision = !state.finishVision
   },
 
 
@@ -280,12 +301,18 @@ const actions = {
   setCurrentCardsToLeaderForm ({ commit }) {
     commit(SET_CURRENT_CARD_TO_LEADER_FORM)
   },
+  updateCard ({ commit }, payload) {
+    commit(UPDATE_CARD, payload)
+  },
   antisort ({ commit }) {
     commit(ANTI_SORT)
   },
   setSortType ({ commit }, payload) {
     commit(SET_SORT_TYPE, payload)
-  }
+  },
+  changeFinishVision ({ commit }) {
+    commit(CHANGE_FINISH_VISION)
+  },
 }
 
 // export everything as default

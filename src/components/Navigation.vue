@@ -155,6 +155,7 @@ export default {
         addTime: '',
         ownerUid: '',
         ownerName: '',
+        ownerIDInGroup: '',
         finished: false
       },
       // 当前正在修改的组，由set()传递
