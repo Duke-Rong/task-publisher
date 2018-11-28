@@ -15,17 +15,12 @@
     <!-- sort仅对currentCards有效，对leader无效 -->
     <div
     v-show="currentShowingLeader">
-      <div
-      v-for="(members,memberIndex) in currentGroup.members"
-      :key="memberIndex">
-        Member: {{ members.name }}
-        <button v-on:click="sortByImportance()">SBI</button>
-        <li
-        v-for="(cards,cardsIndex) in members.cards"
-        :key="cardsIndex">
-          <cards v-bind:card="cards"/>
-        </li>
-      </div>
+      <li
+      v-for="(cards,cardsIndex) in currentCards"
+      :key="cardsIndex">
+        Assigned to: {{ cards.ownerName }}
+        <cards v-bind:card="cards"/>
+      </li>
     </div>
 
     <v-dialog

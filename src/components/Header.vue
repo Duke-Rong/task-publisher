@@ -41,6 +41,7 @@ export default {
   methods: {
     Leader() {
       this.$store.dispatch('setLeaderButton', true)
+      this.$store.dispatch('setCurrentCardsToLeaderForm')
     },
     sortBy(payload) {
       this.$store.dispatch('setSortType', payload)

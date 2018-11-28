@@ -6,6 +6,7 @@ import { READ_GROUP,
   DELETE_MEMBER,
   SET_CURRENT,
   ADD_CARD,
+  SET_CURRENT_CARD_TO_LEADER_FORM,
   LEADER_BUTTON,
   SET_USER,
   SET_SORT_TYPE,
@@ -20,7 +21,6 @@ import { firebaseMutations, firebaseAction } from 'vuexfire'
 const state = {
   // 这应该是整个数据库里有多少groups
 
-  // 此处需要修改！仅读取uid与当前用户吻合的groups
   // 需要clear!
 
   groups: [],
@@ -209,6 +209,17 @@ const mutations = {
     updates[state.newCard.id] = state.newCard
     db.ref('/groups/' + state.currentGroup.id + '/members/' + state.currentMember.id + '/cards').update(updates)
   },
+  // when the leader button is pushed,
+  // set the current cards to all the cards in the current group
+  [SET_CURRENT_CARD_TO_LEADER_FORM] (state) {
+    var updates = {}
+    for (var members in state.currentGroup.members){
+      for (var cards in state.currentGroup.members[members].cards){
+        updates[cards] = state.currentGroup.members[members].cards[cards]
+      }
+    }
+    state.currentCards = updates
+  },
   // Set the anti sort
   [ANTI_SORT] (state) {
     state.anti_sort = !state.anti_sort
@@ -265,6 +276,9 @@ const actions = {
   },
   addcard ({ commit }, payload) {
     commit(ADD_CARD, payload)
+  },
+  setCurrentCardsToLeaderForm ({ commit }) {
+    commit(SET_CURRENT_CARD_TO_LEADER_FORM)
   },
   antisort ({ commit }) {
     commit(ANTI_SORT)

@@ -332,7 +332,6 @@ export default {
       var toDelete = [];
       toDelete[0] = this.currentGroup.id
       toDelete[1] = payload.id
-      console.log(toDelete)
       this.$store.dispatch('deletemember', toDelete)
       this.resetCurrentGroup()
     },

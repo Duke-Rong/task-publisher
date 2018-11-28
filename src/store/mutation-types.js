@@ -16,6 +16,7 @@ export const FIND_MEMBER = 'FIND_MEMBER'
 // For cards
 export const SET_CURRENT = 'SET_CURRENT'
 export const ADD_CARD = 'ADD_CARD'
+export const SET_CURRENT_CARD_TO_LEADER_FORM = 'SET_CURRENT_CARD_TO_LEADER_FORM'
 
 // For user
 export const SET_USER = 'SET_USER'
