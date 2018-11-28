@@ -1,8 +1,7 @@
 <template>
-  <div>
-    Hello,
-    <br>
-    {{ user.email }}
+  <div v-show="navigationShown">
+    <div v-on:click="logout()">Hello,</div>
+    <div v-on:click="logout()">{{ user.email }}</div>
     <br>
     <button v-on:click="addGroupShown()">Add into a group</button>
     <button v-on:click="createGroupShown()">Create group</button>
@@ -24,7 +23,7 @@
                  v-for="(members,indx) in groups.members"
                  :key="indx"
                  v-on:click="ShowHisCards(members)">
-                <router-link :to="'/cards/' + members.id">{{ members.name }}</router-link>
+                <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
               </li>
             </div>
         </div>
@@ -118,6 +117,14 @@
       <button v-on:click="closeTheGroupNotFound">close</button>
     </v-dialog>
 
+    <!-- 登出时的对话 -->
+    <v-dialog
+    v-model="Logout">
+      Do you really want to log out?
+      <button v-on:click="confirmLogout()">yes</button>
+      <button v-on:click="logout()">no</button>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -146,8 +153,17 @@ export default {
       },
       // 新增的卡片
       newCard: {
+        id:'',
         name: '',
-        description: ''
+        description: '',
+        dueDate: '',
+        dueTime: '',
+        importance: '',
+        addTime: '',
+        ownerUid: '',
+        ownerName: '',
+        ownerIDInGroup: '',
+        finished: false
       },
       // 当前正在修改的组，由set()传递
       currentGroup: {},
@@ -170,6 +186,8 @@ export default {
       CurrentlyAddingIntoAGroup: false,
       // 这个开关决定了决定group not found的dialoag的出现与否
       GroupNotFound: false,
+      // 这个开关决定了决定log out的dialoag的出现与否
+      Logout: false,
       // 这个值保存了想加入的group
       GroupIDGoingToAdd: '',
       // 当增加members时传递到store里的内容
@@ -199,6 +217,14 @@ export default {
         this.groupsExtendSwitch[this.groupsExtendSwitch.length] = false
         return newgroup
       })
+    },
+    theuser () {
+        this.user = this.$store.getters.getCurrentUser
+    },
+    navigationShown () {
+      if (this.$store.getters.getCurrentUser)
+        return true
+      return false
     }
   },
   // 当页面跳转的时候，加载user
@@ -414,6 +440,14 @@ export default {
       currentToStore[0] = this.currentGroupID
       currentToStore[1] = payload.id
       this.$store.dispatch('setcurrent', currentToStore)
+    },
+    logout: function() {
+      this.Logout = !this.Logout
+    },
+    confirmLogout: function() {
+      this.Logout = false
+      this.$store.dispatch('logout')
+      firebase.auth().signOut()
     }
   }
 }
