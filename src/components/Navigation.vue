@@ -137,7 +137,7 @@ export default {
   data() {
     return {
       // 当前用户的用户名
-      user: '',
+      theuser: '',
       // groups是否呈打开趋势
       groupsExtendSwitch: [],
       // 被增加的组
@@ -217,6 +217,17 @@ export default {
         this.groupsExtendSwitch[this.groupsExtendSwitch.length] = false
         return newgroup
       })
+    },
+    user: {
+     // getter
+      get: function () {
+        this.theuser = this.$store.getters.getCurrentUser
+        return this.theuser
+      },
+      // setter
+      set: function (newValue) {
+        this.theuser = newValue
+      }
     }
   },
   // 当页面跳转的时候，加载user
@@ -226,7 +237,6 @@ export default {
   // 使用用户的email作为名字
   // 仅在刚刚打开页面时使用
   beforeUpdate() {
-    console.log('beforeUpdate')
     this.user = firebase.auth().currentUser
   },
   updated() {
