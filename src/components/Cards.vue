@@ -39,7 +39,8 @@
           </v-card-title>
         </v-flex>
         <v-spacer></v-spacer>
-        <v-card-actions>
+
+        <v-card-actions v-show="card.ownerUid === currentUser">
             <v-btn icon @click="cardDetails = !cardDetails">
                 <v-icon>{{ cardDetails ? 'keyboard_arrow_up' : 'reorder' }}</v-icon>
             </v-btn>
@@ -62,12 +63,18 @@
 </template>
 
 <script>
+import firebase from 'firebase'
 export default {
   name: 'MainPage',
   props: { card: Object },
   data() {
     return {
       cardDetails: false
+    }
+  },
+  computed: {
+    currentUser() {
+      return firebase.auth().currentUser.uid
     }
   },
   methods: {

@@ -11,24 +11,22 @@
         <cards v-bind:card="cards"/>
         <br>
       </div>
-      <v-btn v-on:click="addCard()" v-show="!currentShowingFinished" dark color="blue-grey darken-2" ripple round>
+      <v-btn v-on:click="addCard()" v-show="!currentShowingFinished && currentGroup.groupLeader === currentUser || currentMember.uid === currentUser" dark color="blue-grey darken-2" ripple round>
         <v-icon>add</v-icon>
       </v-btn>
     </div>
-
-
 
     <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
     <!-- sort仅对currentCards有效，对leader无效 -->
     <div
     v-show="currentShowingLeader">
-      <li
+      <div
       v-for="(cards,cardsIndex) in currentCards"
       :key="cardsIndex"
       v-show="cards.finished === currentShowingFinished">
-        Assigned to: {{ cards.ownerName }}
+        <h3> Assigned to: {{ cards.ownerName }} </h3>
         <cards v-bind:card="cards"/>
-      </li>
+      </div>
     </div>
 
     <v-dialog
@@ -50,6 +48,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Cards from '@/components/Cards'
+import firebase from 'firebase'
 export default {
   components: { Cards },
   /**
@@ -110,9 +109,7 @@ export default {
     },
     currentCards() {
       if (this.$store.getters.getCurrentCards){
-        // sort here
         return this.sortTheCards(this.$store.getters.getCurrentCards)
-        // return this.$store.getters.getCurrentCards
       } else {
         return null
       }
@@ -125,6 +122,9 @@ export default {
     currentShowingFinished() {
       return this.$store.getters.getFinish
     },
+    currentUser() {
+      return firebase.auth().currentUser.uid
+    }
   },
   watch: {
     /**
