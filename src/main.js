@@ -36,6 +36,7 @@ new Vue({
         this.$store.dispatch('setuser', user)
         this.$router.push('/')
       } else {
+        this.$store.dispatch('setuser', null)
         this.$router.push('/auth')
       }
     })

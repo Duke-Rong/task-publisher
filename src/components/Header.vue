@@ -1,8 +1,9 @@
 <template>
-  <div v-show="headerShown">
-    <br>
-    This is header...maybe
-    <br>
+  <v-toolbar v-show="headerShown"
+    color="black"
+    dark
+    clipped-left>
+    <v-spacer></v-spacer>
     <button v-on:click="Leader" v-show="currentCardsAvailable">Leader</button>
     <button v-on:click="sortBy(1)" v-show="currentCardsAvailable">sortByImportance</button>
     <button v-on:click="sortBy(0)" v-show="currentCardsAvailable">sortByAddTime</button>
@@ -17,7 +18,8 @@
     v-model="help">
       广告位招租！
     </v-dialog>
-  </div>
+
+  </v-toolbar>
 </template>
 
 <script>

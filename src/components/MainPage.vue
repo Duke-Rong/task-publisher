@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mainPage">
     <!-- 当一般情况下，显示单人的卡片 -->
     <div v-show="!currentShowingLeader">
       Cards under this guy:
@@ -227,4 +227,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+    .mainPage {
+        position: fixed;
+        width: 74%;
+        height: 100%;
+    }
 </style>

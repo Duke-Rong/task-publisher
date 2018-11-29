@@ -241,3 +241,49 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>
+
+
+
+
+<!-- 此处放main header -->
+    <!-- 容器,里面可以包含container -->
+    <v-content>
+      <!-- 自动与页面调节大小 -->
+      <v-container
+        fluid>
+        <v-layout row>
+              <v-flex xs3>
+                <navigation/>
+              </v-flex>
+              <v-flex xs6>
+                <Header/>
+               </v-flex>
+              <v-flex xs12>
+                <router-view/>
+              </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+
+
+
+<!-- 容器,里面可以包含container -->
+      <v-content>
+        <!-- 自动与页面调节大小 -->
+        <v-container
+          fluid
+          pa-0
+          fill-height>
+          <v-layout row >
+            <v-flex>
+              <navigation/>
+            </v-flex>
+            <v-flex>
+              <Header/>
+            </v-flex>
+            <v-flex>
+              <router-view/>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-content>

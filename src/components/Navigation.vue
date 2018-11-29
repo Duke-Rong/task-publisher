@@ -1,5 +1,5 @@
 <template>
-  <div v-show="navigationShown">
+  <div>
     <!-- everything in a card -->
     <v-card class="navigation">
       <br>
@@ -38,6 +38,7 @@
                 <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
               </li>
             </v-card-text>
+            <v-divider></v-divider>
           </v-card>
         </v-card>
       </v-card>
@@ -180,21 +181,35 @@
     <!-- 组织找不到时发生的对话 -->
     <v-dialog
     v-model="GroupNotFound">
-      <p>We cannot found the group :(</p>
-      <p>You can:</p>
-      Try again :
-      <input type="text" v-model="GroupIDGoingToAdd"><br>
-      <button v-on:click="addIntoAGroup">enter</button>
-      <br> Or ask your leader for the correct group ID
-      <button v-on:click="closeTheGroupNotFound">close</button>
+      <v-card>
+        <p>We cannot found the group :(</p>
+        <p>You can:</p>
+        Try again :
+        <input type="text" v-model="GroupIDGoingToAdd"><br>
+        <button v-on:click="addIntoAGroup">enter</button>
+        <br> Or ask your leader for the correct group ID
+        <button v-on:click="closeTheGroupNotFound">close</button>
+      </v-card>
     </v-dialog>
 
     <!-- 登出时的对话 -->
     <v-dialog
-    v-model="Logout">
-      Do you really want to log out?
-      <button v-on:click="confirmLogout()">yes</button>
-      <button v-on:click="logout()">no</button>
+    v-model="Logout"
+    max-width="400px">
+      <v-card>
+        <v-card-title>
+          <v-flex xs2>
+          </v-flex>
+          <h3>Do you really want to log out?</h3>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-flex xs3>
+          </v-flex>
+          <v-btn color="green darken-1" flat @click="confirmLogout()">Yes</v-btn>
+          <v-btn color="red darken-1" flat @click="logout()">No</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
 
   </div>
@@ -532,7 +547,7 @@ export default {
 <style scoped>
     .navigation {
         position: fixed;
-        width: 25%;
+        width: 26%;
         height: 100%;
         top: 0px;
         background-color: gold;
