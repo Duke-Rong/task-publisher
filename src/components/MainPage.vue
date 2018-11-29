@@ -1,5 +1,5 @@
 <template>
-  <div class="mainPage">
+  <div>
     <br>
     <!-- 当一般情况下，显示单人的卡片 -->
     <div v-show="!currentShowingLeader" style="text-align:center">
@@ -235,10 +235,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .mainPage {
-        position: fixed;
-        width: 64%;
-        height: 100%;
-        background-color: orange;
-    }
 </style>

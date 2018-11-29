@@ -2,26 +2,32 @@
 <template>
   <!-- 表示开始使用这个app -->
   <v-app light>
-    <div v-if="user">
-      <v-container fluid pa-0>
-        <v-layout row>
-          <v-flex>
-          <navigation/>
-          </v-flex>
-          <v-layout column>
-            <v-flex>
-              <Header/>
-            </v-flex>
-            <v-flex>
-              <router-view/>
-            </v-flex>
-          </v-layout>
-        </v-layout>
-      </v-container>
-    </div>
-    <div v-else>
-      <router-view/>
-    </div>
+    <v-container fluid pa-0>
+      <v-layout row wrap>
+        <v-flex xs3>
+          <v-container fluid pa-0>
+              <div class="first">
+                <navigation/>
+              </div>
+          </v-container>
+        </v-flex>
+
+        <v-flex>
+          <v-container fluid pa-0>
+            <div class="second">
+              <v-layout column>
+                <v-flex>
+                  <Header/>
+              </v-flex>
+                <v-flex>
+                  <router-view/>
+                </v-flex>
+              </v-layout>
+              </div>
+          </v-container>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </v-app>
 </template>
 
@@ -48,5 +54,20 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+    .first {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: gold;
+      background-size: 100% 100%;
+    }
+    .second {
+      position: absolute;
+      width: 76%;
+      height: 100%;
+      background-image: url("assets/mainPage.jpg");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+    }
 </style>

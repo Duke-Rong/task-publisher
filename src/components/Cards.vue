@@ -40,7 +40,7 @@
         </v-flex>
         <v-spacer></v-spacer>
 
-        <v-card-actions v-show="card.ownerUid === currentUser">
+        <v-card-actions v-show="card.ownerUid === currentUser || currentGroup.groupLeader === currentUser">
             <v-btn icon @click="cardDetails = !cardDetails">
                 <v-icon>{{ cardDetails ? 'keyboard_arrow_up' : 'reorder' }}</v-icon>
             </v-btn>
@@ -73,6 +73,9 @@ export default {
     }
   },
   computed: {
+    currentGroup() {
+      return this.$store.getters.getCurrentGroup
+    },
     currentUser() {
       return firebase.auth().currentUser.uid
     }

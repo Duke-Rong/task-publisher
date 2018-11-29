@@ -128,6 +128,7 @@ const mutations = {
   // 这玩意貌似会自动更新！
   // 传入：group id, member id
   [SET_CURRENT] (state, payload) {
+    console.log('group.js: ' + payload)
     if(state.groups[payload[0]]) {
       state.currentGroup = state.groups[payload[0]]
       if (state.currentGroup.members[payload[1]]) {

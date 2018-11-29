@@ -333,9 +333,11 @@ export default {
     }
   },
   methods: {
+    // 使用情况：点击group的set按钮时
     // 将组群绑定到currentGroup里，并打开修改页
     set: function(payload,id) {
         this.CurrentlyManagingTheGroup = true
+        // 此处的id保存的是个index？
         this.currentGroupID = id
         this.resetCurrentGroup()
         // 同时，搜索group owner的在群里的id并保存在currentGroupOwner内
@@ -389,6 +391,8 @@ export default {
       this.commaShown = !this.commaShown
     },
     // 重新抓取currentGroup
+    // 由于groupsInDatabase是以Index来排列，不是以id排列
+    // 因此this.currentGroupID是Index形式的数字（e.g. 0），而不是id形式
     resetCurrentGroup: function(){
         this.currentGroup = this.groupsInDatabase[this.currentGroupID]
     },
@@ -546,12 +550,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     .navigation {
-        position: fixed;
-        width: 36%;
-        height: 100%;
-        top: 0px;
         background-color: gold;
-        background-repeat: no-repeat;
         background-size: 100% 100%;
     }
 </style>
