@@ -3,7 +3,7 @@
     <!-- 当一般情况下，显示单人的卡片 -->
     <div v-show="!currentShowingLeader">
       Cards under this guy:
-      <button v-on:click="addCard()">Add</button>
+      <button v-on:click="addCard()" v-show="!currentShowingFinished">Add</button>
       <li
       v-for="(cards,cardsIndex) in currentCards"
       :key="cardsIndex"
@@ -28,12 +28,15 @@
 
     <v-dialog
     v-model="currentAddingCards">
-      Card name: <input type="text" v-model="newCard.name"><br>
-      Card description: <input type="text" v-model="newCard.description"><br>
-      Card due Date: <input type="text" v-model="newCard.dueDate"><br>
-      Card due time: <input type="text" v-model="newCard.dueTime"><br>
-      Card importance: <input type="text" v-model="newCard.importance"><br>
-      <button v-on:click="confirmAddingThisCard">OK</button>
+      <v-card>
+        Card name: <input type="text" v-model="newCard.name"><br>
+        Card description: <input type="text" v-model="newCard.description"><br>
+        Card due Date: <input type="text" v-model="newCard.dueDate"><br>
+        Card due time: <input type="text" v-model="newCard.dueTime"><br>
+        Card importance: <input type="text" v-model="newCard.importance"><br>
+        <button v-on:click="confirmAddingThisCard">OK</button>
+        <button v-on:click="currentAddingCards=false">Close</button>
+      </v-card>
     </v-dialog>
 
   </div>
@@ -229,7 +232,8 @@ export default {
 <style scoped>
     .mainPage {
         position: fixed;
-        width: 74%;
+        width: 76%;
         height: 100%;
+        background-color: blue;
     }
 </style>
