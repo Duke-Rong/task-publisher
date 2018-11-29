@@ -287,3 +287,12 @@ export default {
           </v-layout>
         </v-container>
       </v-content>
+
+
+    {{ card.name }}
+    {{ card.description }}
+    {{ card.dueDate }}
+    {{ card.dueTime }}
+    {{ card.importance }}
+    <button v-on:click="finish()" v-show="!card.finished">Finish</button>
+    <button v-on:click="finish()" v-show="card.finished">Put Back</button>

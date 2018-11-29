@@ -59,12 +59,8 @@
     </v-btn>
 
     <!-- Show Finished tasks -->
-    <v-btn icon v-on:click="finish()" v-show="currentCardsAvailable && !currentShowingFinished">
-      <v-icon>check_circle_outline</v-icon>
-    </v-btn>
-    <!-- Show Ongoing tasks -->
-    <v-btn icon v-on:click="finish()" v-show="currentCardsAvailable && currentShowingFinished">
-      <v-icon>play_circle_outline</v-icon>
+    <v-btn icon v-on:click="finish()" v-show="currentCardsAvailable">
+      <v-icon>{{ currentShowingFinished ? 'play_circle_outline' : 'check_circle_outline' }}</v-icon>
     </v-btn>
 
     <!-- Help button -->

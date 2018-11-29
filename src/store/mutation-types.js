@@ -18,6 +18,7 @@ export const SET_CURRENT = 'SET_CURRENT'
 export const ADD_CARD = 'ADD_CARD'
 export const SET_CURRENT_CARD_TO_LEADER_FORM = 'SET_CURRENT_CARD_TO_LEADER_FORM'
 export const UPDATE_CARD = 'UPDATE_CARD'
+export const DELETE_CARD = 'DELETE_CARD'
 
 // For user
 export const SET_USER = 'SET_USER'

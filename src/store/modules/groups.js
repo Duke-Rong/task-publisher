@@ -8,6 +8,7 @@ import { READ_GROUP,
   ADD_CARD,
   SET_CURRENT_CARD_TO_LEADER_FORM,
   UPDATE_CARD,
+  DELETE_CARD,
   LEADER_BUTTON,
   SET_USER,
   SET_SORT_TYPE,
@@ -152,14 +153,6 @@ const mutations = {
   },
   // 设置卡组成currentGroup内的所有members的卡组
   [LEADER_BUTTON] (state, payload) {
-    /*
-    state.currentCards = []
-    for (var membs in state.currentGroup.members){
-      for (var cards in state.currentGroup.members[membs].cards){
-        state.currentCards[state.currentCards.length] = state.currentGroup.members[membs].cards[cards]
-      }
-    }
-    */
     state.LeaderButtonPushed = payload
   },
   // 输入：groupID 输出：该group
@@ -263,6 +256,9 @@ const mutations = {
     updates[payload.id] = payload
     db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').update(updates)
   },
+  [DELETE_CARD] (state, payload) {
+    db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').child(payload.id).remove()
+  },
   // Set the anti sort
   [ANTI_SORT] (state) {
     state.anti_sort = !state.anti_sort
@@ -364,6 +360,9 @@ const actions = {
   },
   updateCard ({ commit }, payload) {
     commit(UPDATE_CARD, payload)
+  },
+  deleteCard ({ commit }, payload) {
+    commit(DELETE_CARD, payload)
   },
   antisort ({ commit }) {
     commit(ANTI_SORT)
