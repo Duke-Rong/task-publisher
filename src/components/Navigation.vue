@@ -547,7 +547,7 @@ export default {
 <style scoped>
     .navigation {
         position: fixed;
-        width: 25%;
+        width: 36%;
         height: 100%;
         top: 0px;
         background-color: gold;

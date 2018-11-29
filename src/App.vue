@@ -13,7 +13,7 @@
               <Header/>
             </v-flex>
             <v-flex>
-            <router-view/>
+              <router-view/>
             </v-flex>
           </v-layout>
         </v-layout>

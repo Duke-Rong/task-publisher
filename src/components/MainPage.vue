@@ -232,8 +232,8 @@ export default {
 <style scoped>
     .mainPage {
         position: fixed;
-        width: 76%;
+        width: 74%;
         height: 100%;
-        background-color: blue;
+        background-color: orange;
     }
 </style>
