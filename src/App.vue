@@ -2,7 +2,7 @@
 <template>
   <!-- 表示开始使用这个app -->
   <v-app light>
-    <v-container fluid pa-0>
+    <v-container fluid pa-0 v-if="user">
       <v-layout row wrap>
         <v-flex xs3>
           <v-container fluid pa-0>
@@ -28,6 +28,10 @@
         </v-flex>
       </v-layout>
     </v-container>
+
+    <div v-else>
+      <router-view/>
+    </div>
   </v-app>
 </template>
 
