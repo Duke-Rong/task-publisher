@@ -214,18 +214,35 @@
       </v-card>
     </v-dialog>
 
+
+
+
+
     <!-- 创建组时发生的对话 -->
     <v-dialog
-    v-model="CurrentlyCreatingGroup">
+    v-model="CurrentlyCreatingGroup"
+    max-width="500">
       <v-card>
-        <p>Create a new group</p>
-        Group name :
-        <input type="text" v-model="newGroup.name"><br>
-        <br>
-        <button v-on:click="createGroup">create</button>
-        <button @click="CurrentlyCreatingGroup=false">close</button>
+        <v-card-title>
+          Create a new group
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>
+              <v-flex xs12>
+                <v-text-field label="Group name" :rules="textFieldNull" v-model="newGroup.name" clearable></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" flat @click="CurrentlyCreatingGroup=false">Close</v-btn>
+          <v-btn :disabled="!vaildCreateNewGroup" color="blue darken-1" flat v-on:click="createGroup">Create</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
+
 
     <!-- 加入组时发生的对话 -->
     <v-dialog
@@ -385,9 +402,14 @@ export default {
         return true
       return false
     },
+    // See if the leader is vaild to add the member
     vaildAddingMember () {
       return (this.newMember.name && this.newMember.uid)
-    }
+    },
+    // See if the user is vaild to create the group
+    vaildCreateNewGroup () {
+      return (this.newGroup.name)
+    },
   },
   // 当页面跳转的时候，加载user
   created(){
