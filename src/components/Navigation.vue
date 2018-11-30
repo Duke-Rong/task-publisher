@@ -1,86 +1,86 @@
 <template>
   <div>
 
-<v-layout row>
-      <v-flex>
-        <!-- everything in a card -->
-        <v-card>
-          <!-- User profile -->
-          <v-toolbar color="black" dark>
-            <h3 v-on:click="logout()">Welcome, <br> {{ user.email }}</h3>
-          </v-toolbar>
-            <v-list subheader>
-              <v-subheader>Groups</v-subheader>
-              <!-- for loop. 展示所有groups里面的卡 -->
-              <div v-for="(groups,index) in groupsInDatabase" :key="index">
-                <v-divider></v-divider>
-                  <!-- 此处进行筛选 -->
-                  <!-- 由于每一个group里相同的member只有一个，因此每次组只会显示一次 -->
-                  <div v-for="(members,indxxx) in groups.members" :key="indxxx" v-if="members.uid === user.uid">
-                    <!-- 显示属于user的卡片 -->
-                    <v-card>
-                      <v-layout row wrap>
-                        <v-flex xs10>
-                          <!-- 展示组名 -->
-                          <v-card-title v-on:click="changeGroupExtensionVisibility(groups,index)">
-                            <h3> {{ groups.name }} </h3>
-                          </v-card-title>
-                          <!-- 展示组下所有成员-->
-                          <v-card-text v-show="groupsExtendSwitch[index]">
-                            <div
-                            v-for="(members,indx) in groups.members"
-                            :key="indx"
-                            v-on:click="ShowHisCards(members)">
-                              <v-layout row>
-                                <v-spacer></v-spacer>
-                                <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
-                              </v-layout>
-                            </div>
-                          </v-card-text>
-                        </v-flex>
-                        <v-flex>
-                          <v-card-actions>
-                            <v-btn icon v-on:click="set(groups,index)">
-                              <v-icon>toc</v-icon>
-                            </v-btn>
-                          </v-card-actions>
-                        </v-flex>
-                      <v-divider></v-divider>
-                      </v-layout>
-                    </v-card>
-                  </div>
-              </div>
-              <v-subheader>Actions</v-subheader>
+  <v-layout row>
+    <v-flex>
+      <!-- everything in a card -->
+      <v-card>
+        <!-- User profile -->
+        <v-toolbar color="black" dark>
+          <h3 v-on:click="logout()">Welcome, <br> {{ user.email }}</h3>
+        </v-toolbar>
+          <v-list subheader>
+            <v-subheader>Groups</v-subheader>
+            <!-- for loop. 展示所有groups里面的卡 -->
+            <div v-for="(groups,index) in groupsInDatabase" :key="index">
+              <v-divider></v-divider>
+                <!-- 此处进行筛选 -->
+                <!-- 由于每一个group里相同的member只有一个，因此每次组只会显示一次 -->
+                <div v-for="(members,indxxx) in groups.members" :key="indxxx" v-if="members.uid === user.uid">
+                  <!-- 显示属于user的卡片 -->
+                  <v-card>
+                    <v-layout row wrap>
+                      <v-flex xs10>
+                        <!-- 展示组名 -->
+                        <v-card-title v-on:click="changeGroupExtensionVisibility(groups,index)">
+                          <h3> {{ groups.name }} </h3>
+                        </v-card-title>
+                        <!-- 展示组下所有成员-->
+                        <v-card-text v-show="groupsExtendSwitch[index]">
+                          <div
+                          v-for="(members,indx) in groups.members"
+                          :key="indx"
+                          v-on:click="ShowHisCards(members)">
+                            <v-layout row>
+                              <v-spacer></v-spacer>
+                              <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
+                            </v-layout>
+                          </div>
+                        </v-card-text>
+                      </v-flex>
+                      <v-flex>
+                        <v-card-actions>
+                          <v-btn icon v-on:click="set(groups,index)">
+                            <v-icon>toc</v-icon>
+                          </v-btn>
+                        </v-card-actions>
+                      </v-flex>
+                    <v-divider></v-divider>
+                    </v-layout>
+                  </v-card>
+                </div>
+            </div>
+            <v-subheader>Actions</v-subheader>
 
-              <v-list-tile avatar v-on:click="addGroupShown()">
-                <v-list-tile-avatar color="primary">
-                  <v-icon dark>group_add</v-icon>
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    Add into a group
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+            <v-list-tile avatar v-on:click="addGroupShown()">
+              <v-list-tile-avatar color="primary">
+                <v-icon dark>group_add</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  Join into a group
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
 
-              <v-list-tile avatar v-on:click="createGroupShown()">
-                <v-list-tile-avatar color="primary">
-                  <v-icon dark>add</v-icon>
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title v-if="!commaShown">
-                    Create a group
-                  </v-list-tile-title>
-                  <v-list-tile-title v-if="commaShown">
-                    Create a group,
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+            <v-list-tile avatar v-on:click="createGroupShown()">
+              <v-list-tile-avatar color="primary">
+                <v-icon dark>add</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title v-if="!commaShown">
+                  Create a group
+                </v-list-tile-title>
+                <v-list-tile-title v-if="commaShown">
+                  Create a group,
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
 
-            </v-list>
-        </v-card>
-      </v-flex>
-</v-layout>
+          </v-list>
+      </v-card>
+    </v-flex>
+  </v-layout>
 
 
 
@@ -215,15 +215,12 @@
     </v-dialog>
 
 
-
-
-
     <!-- 创建组时发生的对话 -->
     <v-dialog
     v-model="CurrentlyCreatingGroup"
     max-width="500">
       <v-card>
-        <v-card-title>
+        <v-card-title class="headline">
           Create a new group
         </v-card-title>
         <v-card-text>
@@ -243,17 +240,29 @@
       </v-card>
     </v-dialog>
 
-
     <!-- 加入组时发生的对话 -->
     <v-dialog
-    v-model="CurrentlyAddingIntoAGroup">
+    v-model="CurrentlyAddingIntoAGroup"
+    max-width="500">
       <v-card>
-        <p>Please enter the group ID:</p>
-        Group id :
-        <input type="text" v-model="GroupIDGoingToAdd"><br>
-        <button v-on:click="addIntoAGroup">enter</button>
-        <button @click="CurrentlyAddingIntoAGroup = false">close</button>
-        <p>Ask your group leader for the group id</p>
+        <v-card-title>
+          <div class="headline">Join into a group</div>
+          <v-label>Enter the id of the group you want to join into</v-label>
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>
+              <v-flex xs12>
+                <v-text-field label="Group id" :rules="textFieldNull" v-model="GroupIDGoingToAdd" hint="Ask your group leader for the group id" clearable></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" flat @click="CurrentlyAddingIntoAGroup = false">Close</v-btn>
+          <v-btn :disabled="!vaildAddingIntoAGroup" color="blue darken-1" flat v-on:click="addIntoAGroup">Join</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -409,6 +418,10 @@ export default {
     // See if the user is vaild to create the group
     vaildCreateNewGroup () {
       return (this.newGroup.name)
+    },
+    // See if the user are able to add into a group
+    vaildAddingIntoAGroup () {
+      return (this.GroupIDGoingToAdd)
     },
   },
   // 当页面跳转的时候，加载user
