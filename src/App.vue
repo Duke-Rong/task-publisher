@@ -57,9 +57,9 @@ export default {
 <style scoped>
     .first {
       position: absolute;
-      width: 100%;
+      width: 25%;
       height: 100%;
-      background-color: gold;
+      background-color: hsl(175, 100%, 50%);
       background-size: 100% 100%;
     }
     .second {

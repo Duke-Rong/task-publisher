@@ -1,131 +1,183 @@
 <template>
   <div>
-    <!-- everything in a card -->
-    <v-card class="navigation">
-      <br>
-      <!-- User profile -->
-      <v-card>
-        <div v-on:click="logout()" v-if="!commaShown">Hello</div>
-        <!-- comma the cheater -->
-        <div v-on:click="logout()"  v-else>Hello,</div>
-        <div v-on:click="logout()">{{ user.email }}</div>
-      </v-card>
 
-      <br>
+<v-layout row>
+      <v-flex>
+        <!-- everything in a card -->
+        <v-card>
+          <!-- User profile -->
+          <v-toolbar color="black" dark>
+            <h3 v-on:click="logout()">Welcome, <br> {{ user.email }}</h3>
+          </v-toolbar>
+            <v-list subheader>
+              <v-subheader>Groups</v-subheader>
+              <!-- for loop. 展示所有groups里面的卡 -->
+              <div v-for="(groups,index) in groupsInDatabase" :key="index">
+                <v-divider></v-divider>
+                  <!-- 此处进行筛选 -->
+                  <!-- 由于每一个group里相同的member只有一个，因此每次组只会显示一次 -->
+                  <div v-for="(members,indxxx) in groups.members" :key="indxxx" v-if="members.uid === user.uid">
+                    <!-- 显示属于user的卡片 -->
+                    <v-card>
+                      <v-layout row wrap>
+                        <v-flex xs10>
+                          <!-- 展示组名 -->
+                          <v-card-title v-on:click="changeGroupExtensionVisibility(groups,index)">
+                            <h3> {{ groups.name }} </h3>
+                          </v-card-title>
+                          <!-- 展示组下所有成员-->
+                          <v-card-text v-show="groupsExtendSwitch[index]">
+                            <div
+                            v-for="(members,indx) in groups.members"
+                            :key="indx"
+                            v-on:click="ShowHisCards(members)">
+                              <v-layout row>
+                                <v-spacer></v-spacer>
+                                <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
+                              </v-layout>
+                            </div>
+                          </v-card-text>
+                        </v-flex>
+                        <v-flex>
+                          <v-card-actions>
+                            <v-btn icon v-on:click="set(groups,index)">
+                              <v-icon>toc</v-icon>
+                            </v-btn>
+                          </v-card-actions>
+                        </v-flex>
+                      <v-divider></v-divider>
+                      </v-layout>
+                    </v-card>
+                  </div>
+              </div>
+              <v-subheader>Actions</v-subheader>
 
-      <!-- for loop. 展示所有groups里面的卡 -->
-      <v-card v-for="(groups,index) in groupsInDatabase"
-      :key="index">
-        <!-- 此处进行筛选 -->
-        <!-- 由于每一个group里相同的member只有一个，因此每次组只会显示一次 -->
-        <v-card v-for="(members,indxxx) in groups.members"
-        :key="indxxx"
-        v-if="members.uid === user.uid">
-          <!-- 显示属于user的卡片 -->
-          <v-card>
-            <span v-on:click="changeGroupExtensionVisibility(groups,index)">
-              {{ groups.name }}
-            </span>
-              <v-btn icon v-on:click="set(groups,index)">
-                  <v-icon>toc</v-icon>
-              </v-btn>
-            <v-card-text v-show="groupsExtendSwitch[index]">
-              <!-- 展示组下所有成员-->
-              <li
-              v-for="(members,indx) in groups.members"
-              :key="indx"
-              v-on:click="ShowHisCards(members)">
-                <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
-              </li>
-            </v-card-text>
-            <v-divider></v-divider>
-          </v-card>
+              <v-list-tile avatar v-on:click="addGroupShown()">
+                <v-list-tile-avatar color="primary">
+                  <v-icon dark>group_add</v-icon>
+                </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>
+                    Add into a group
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-list-tile avatar v-on:click="createGroupShown()">
+                <v-list-tile-avatar color="primary">
+                  <v-icon dark>add</v-icon>
+                </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title v-if="!commaShown">
+                    Create a group
+                  </v-list-tile-title>
+                  <v-list-tile-title v-if="commaShown">
+                    Create a group,
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+            </v-list>
         </v-card>
-      </v-card>
-
-      <br>
-
-      <!-- add group and create group button -->
-      <v-card>
-
-        <v-btn color="primary" small dark
-        v-on:click="addGroupShown()">
-          <v-icon >add</v-icon>
-        </v-btn> Add into a group
-
-        <br>
-
-        <v-btn color="primary" small dark
-        v-on:click="createGroupShown()">
-            <v-icon >add</v-icon>
-        </v-btn> Create a group
-
-      </v-card>
-
-    </v-card>
-
+      </v-flex>
+</v-layout>
 
 
 
     <!-- Manage group时出现的对话 -->
     <v-dialog
     v-model="CurrentlyManagingTheGroup"
-    max-width="1000px">
-      <v-card>
-        <div v-if="currentGroup.groupLeader === user.uid">
-          Group name: <input type="text" v-model="currentGroup.name"><br>
-        </div>
-        <div v-else>
-          Group name: {{ currentGroup.name }}
-        </div>
-        <!-- 当user = group leader时才会出现group id -->
-        <p v-if="currentGroup.groupLeader === user.uid"
-        v-bind:title="'Give this group id to your member so they can join your group!'"> Group ID: {{ currentGroup.id }} </p>
-          <!-- group members -->
-          <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
-                :key="membersShownInManageTheGroup">
-                <!-- 此处需要对不同用户显示不同的东西 -->
-                <!-- 当组员名不是当前用户时，显示paragraph -->
-                <!-- 当组员名是当前用户时，显示input好修改名字 -->
-                <div
-                v-if="members.uid !== user.uid">
-                {{ members.name }}
-                <!-- 当用户是组长时，显示删除组员按钮 -->
-                <v-btn icon
-                v-if="user.uid === currentGroup.groupLeader"
-                v-on:click="deleteMember(members)">
-                  <v-icon>delete</v-icon>
-                </v-btn>
+    max-width="500px">
+        <v-card>
+          <v-card-title>
+            <div v-if="currentGroup.groupLeader === user.uid" class="headline">
+              <input type="text" v-model="currentGroup.name">
+            </div>
+            <span v-else class="headline"> {{ currentGroup.name }} </span>
+            <!-- 当user = group leader时才会出现group id -->
+            <v-tooltip bottom>
+              <v-label slot="activator" v-if="currentGroup.groupLeader === user.uid"> Group ID: {{ currentGroup.id }} </v-label>
+              <span>Give this group id to your member so they can join your group!</span>
+            </v-tooltip>
+          </v-card-title>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12>
 
-                </div>
-                <!-- 当组员名是当前用户时，显示input好修改名字 -->
-                <div v-else>
-                  <input v-model="members.name">
-                  <!-- 当用户是组员时，出现退出按钮 -->
-                  <v-btn icon
-                  v-on:click="quit(members)">
-                    <v-icon>cancel</v-icon>
-                  </v-btn>
-                </div>
-                <br>
-              </li>
-        <div
-        v-if="user.uid === currentGroup.groupLeader">
-        member name: <input type="text" v-model="newMember.name"><br>
-        member uid: <input type="text" v-model="newMember.uid"><br>
-        <button v-on:click="addMember">Add member</button>
-        </div>
-        <v-btn color="primary" small dark
-        v-on:click="confirmChange">
-          CONFIRM CHANGE
-        </v-btn>
-        <v-btn color="red" small dark
-        v-on:click="discard">
-          CLOSE
-        </v-btn>
-
-      </v-card>
+                  <v-list subheader>
+                    <v-subheader>Group members</v-subheader>
+                    <!-- group members -->
+                    <div v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
+                      :key="membersShownInManageTheGroup">
+                        <v-divider></v-divider>
+                          <!-- 此处需要对不同用户显示不同的东西 -->
+                        <!-- 当组员名不是当前用户时，显示paragraph -->
+                        <v-list-tile avatar v-if="members.uid !== user.uid">
+                        <v-list-tile-avatar>
+                          <v-icon>label</v-icon>
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                          <v-list-tile-title>
+                            {{ members.name }}
+                          </v-list-tile-title>
+                        </v-list-tile-content>
+                        <!-- 当用户是组长时，显示删除组员按钮 -->
+                        <v-list-tile-action>
+                          <v-btn icon
+                          v-if="user.uid === currentGroup.groupLeader"
+                          v-on:click="deleteMember(members)">
+                            <v-icon>delete</v-icon>
+                          </v-btn>
+                        </v-list-tile-action>
+                      </v-list-tile>
+                      <!-- 当组员名是当前用户时，显示input好修改名字 -->
+                      <v-list-tile avatar v-else>
+                        <v-list-tile-avatar>
+                          <v-icon>label</v-icon>
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                          <v-list-tile-title>
+                            <input v-model="members.name">
+                          </v-list-tile-title>
+                        </v-list-tile-content>
+                        <!-- 当用户是组员时，出现退出按钮 -->
+                        <v-list-tile-action>
+                          <v-btn icon v-on:click="quit(members)">
+                            <v-icon>cancel</v-icon>
+                          </v-btn>
+                        </v-list-tile-action>
+                      </v-list-tile>
+                    </div>
+                  <v-divider></v-divider>
+                  <v-list-tile avatar v-on:click="addMemberHelper" v-if="user.uid === currentGroup.groupLeader">
+                    <v-list-tile-avatar small color="primary">
+                      <v-icon dark>person_add</v-icon>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title>
+                        Add a member
+                      </v-list-tile-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                  </v-list>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="red darken-1" flat v-on:click="discard">Close</v-btn>
+            <v-btn color="blue darken-1" flat v-on:click="confirmChange">Save</v-btn>
+          </v-card-actions>
+        </v-card>
     </v-dialog>
+
+
+
+
+
+
 
     <!-- 组长退出时候发生的对话 -->
     <v-dialog
@@ -146,8 +198,24 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="blue darken-1" flat @click="CurrentlyDeletingLeader = false">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click="closeAddingMemberDialog">Close</v-btn>
           <v-btn color="blue darken-1" flat @click="exchangeLeader">Confirm</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- 增加member时发生の会话 -->
+    <v-dialog
+    v-model="addingMemberDialog"
+    max-width="400px">
+      <v-card>
+        <v-card-text>
+          <v-text-field label="Name in the group" :rules="textFieldNull" v-model="newMember.name" hint="This name will show in the group" required clearable></v-text-field>
+          <v-text-field label="Member Uid" :rules="textFieldNull && uidVaild" v-model="newMember.uid" hint="Ask the member for the uid. Your member could check his uid in the profile page after registeration" required clearable></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn :disabled="!vaildAddingMember" color="green darken-1" flat @click="addMember">Confirm</v-btn>
+          <v-btn color="red darken-1" flat @click="addingMemberDialog = false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -263,6 +331,8 @@ export default {
       currentMember: null,
       // 这个开关决定了增加members的dialog的出现与否
       CurrentlyManagingTheGroup: false,
+      // 这个开关决定了增加member的dialog的出现与否
+      addingMemberDialog: false,
       // 这个开关决定了增加卡片的dialoag的出现与否
       CurrentlyAddingCardToOneMember: false,
       // 这个开关决定了决定新组长的dialoag的出现与否
@@ -289,7 +359,11 @@ export default {
       // 这玩意v-show到一个逗号，每次change groupsExtendSwitch
       // 他都会被改变值，使逗号出现/消失
       // 以此来update页面，从而触发组员的shou
-      commaShown: false
+      commaShown: false,
+      // 这个玩意检查在填写信息的时候是否没填
+      textFieldNull: [val => (val || '').length > 0 || 'This field is required'],
+      // 这个玩意检查uid是否小于25位
+      uidVaild: [val => (val || '').length > 25 || 'Please input vaild uid']
     }
   },
   computed: {
@@ -314,6 +388,9 @@ export default {
       if (this.$store.getters.getCurrentUser)
         return true
       return false
+    },
+    vaildAddingMember () {
+      return (this.newMember.name && this.newMember.uid)
     }
   },
   // 当页面跳转的时候，加载user
@@ -360,6 +437,18 @@ export default {
       const id = this.currentGroup.id
       // 重新抓取currentGroup
       this.resetCurrentGroup()
+      // 清理new member
+      this.clearMember()
+      // 关闭对话
+      this.addingMemberDialog = false
+    },
+    // Open the adding member dialog
+    addMemberHelper: function() {
+      this.addingMemberDialog = true
+    },
+    // Close the adding member dialog
+    closeAddingMemberDialog: function() {
+      this.addingMemberDialog = false
       // 清理new member
       this.clearMember()
     },
