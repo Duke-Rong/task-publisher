@@ -65,59 +65,34 @@ setTimeout(() => {
 }, 500)
 
 
-<v-card>
-        <div v-if="currentGroup.groupLeader === user.uid">
-          Group name: <input type="text" v-model="currentGroup.name"><br>
-        </div>
-        <div v-else>
-          Group name: {{ currentGroup.name }}
-        </div>
-        <!-- 当user = group leader时才会出现group id -->
-        <p v-if="currentGroup.groupLeader === user.uid"
-        v-bind:title="'Give this group id to your member so they can join your group!'"> Group ID: {{ currentGroup.id }} </p>
-          <!-- group members -->
-          <li v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
-                :key="membersShownInManageTheGroup">
-                <!-- 此处需要对不同用户显示不同的东西 -->
-                <!-- 当组员名不是当前用户时，显示paragraph -->
-                <!-- 当组员名是当前用户时，显示input好修改名字 -->
-                <div
-                v-if="members.uid !== user.uid">
-                {{ members.name }}
-                <!-- 当用户是组长时，显示删除组员按钮 -->
-                <v-btn icon
-                v-if="user.uid === currentGroup.groupLeader"
-                v-on:click="deleteMember(members)">
-                  <v-icon>delete</v-icon>
-                </v-btn>
-
-                </div>
-                <!-- 当组员名是当前用户时，显示input好修改名字 -->
-                <div v-else>
-                  <input v-model="members.name">
-                  <!-- 当用户是组员时，出现退出按钮 -->
-                  <v-btn icon
-                  v-on:click="quit(members)">
-                    <v-icon>cancel</v-icon>
-                  </v-btn>
-                </div>
-                <br>
-              </li>
-
-        <div
-        v-if="user.uid === currentGroup.groupLeader">
-        member name: <input type="text" v-model="newMember.name"><br>
-        member uid: <input type="text" v-model="newMember.uid"><br>
-        <button v-on:click="addMember">Add member</button>
-        </div>
-
-        <v-btn color="primary" small dark
-        v-on:click="confirmChange">
-          CONFIRM CHANGE
-        </v-btn>
-        <v-btn color="red" small dark
-        v-on:click="discard">
-          CLOSE
-        </v-btn>
-
-      </v-card>
+<!-- 显示属于user的卡片 -->
+                  <v-card>
+                    <v-layout row wrap>
+                      <v-flex xs10>
+                        <!-- 展示组名 -->
+                        <v-card-title v-on:click="changeGroupExtensionVisibility(groups,index)">
+                          <h3> {{ groups.name }} </h3>
+                        </v-card-title>
+                        <!-- 展示组下所有成员-->
+                        <v-card-text v-show="groupsExtendSwitch[index]">
+                          <div
+                          v-for="(members,indx) in groups.members"
+                          :key="indx"
+                          v-on:click="ShowHisCards(members)">
+                            <v-layout row>
+                              <v-spacer></v-spacer>
+                              <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
+                            </v-layout>
+                          </div>
+                        </v-card-text>
+                      </v-flex>
+                      <v-flex>
+                        <v-card-actions>
+                          <v-btn icon v-on:click="set(groups,index)">
+                            <v-icon>toc</v-icon>
+                          </v-btn>
+                        </v-card-actions>
+                      </v-flex>
+                    <v-divider></v-divider>
+                    </v-layout>
+                  </v-card>

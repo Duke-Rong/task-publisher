@@ -182,7 +182,11 @@ const mutations = {
     groupsDB.update(updates)
     // 这样一来，我们就获取了新的group,包含了完整的id和name
     // 将自己放进去
-    state.newMember.name = state.currentUser.email
+    if (state.currentUser.displayName){
+      state.newMember.name = state.currentUser.displayName
+    } else {
+      state.newMember.name = state.currentUser.email
+    }
     state.newMember.uid = state.currentUser.uid
     state.newMember.id = db.ref('/groups/' + state.newgroup.id + '/members').push(state.newMember).key
     var updatess = {}
@@ -200,7 +204,13 @@ const mutations = {
   // 传入：payload[0]是group, payload[1]是member
   [ADD_MEMBER] (state, payload) {
     // 获取新组员名字.
-    state.newMember.name = payload[1].name
+    // 若是有display name则使用那个名字
+    if (payload[1].displayName){
+      state.newMember.name = payload[1].displayName
+    } else {
+      // 没有就用email
+      state.newMember.name = payload[1].email
+    }
     state.newMember.uid = payload[1].uid
     // 将其push进该组，并用同样的方法获取member id
     state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
