@@ -167,17 +167,11 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="red darken-1" flat v-on:click="discard">Close</v-btn>
+            <v-btn color="red darken-1" flat v-on:click="closeManageMemberDialog">Close</v-btn>
             <v-btn color="blue darken-1" flat v-on:click="confirmChange">Save</v-btn>
           </v-card-actions>
         </v-card>
     </v-dialog>
-
-
-
-
-
-
 
     <!-- 组长退出时候发生的对话 -->
     <v-dialog
@@ -198,7 +192,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="blue darken-1" flat @click="closeAddingMemberDialog">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click="CurrentlyDeletingLeader=false">Close</v-btn>
           <v-btn color="blue darken-1" flat @click="exchangeLeader">Confirm</v-btn>
         </v-card-actions>
       </v-card>
@@ -360,6 +354,8 @@ export default {
       // 他都会被改变值，使逗号出现/消失
       // 以此来update页面，从而触发组员的shou
       commaShown: false,
+      // 当组长改动名字但又点击取消后，将这个名字还回去
+      oldGroupNameBeforeChange: '',
       // 这个玩意检查在填写信息的时候是否没填
       textFieldNull: [val => (val || '').length > 0 || 'This field is required'],
       // 这个玩意检查uid是否小于25位
@@ -417,6 +413,7 @@ export default {
         // 此处的id保存的是个index？
         this.currentGroupID = id
         this.resetCurrentGroup()
+        this.oldGroupNameBeforeChange = this.currentGroup.name
         // 同时，搜索group owner的在群里的id并保存在currentGroupOwner内
         for (var memb in this.currentGroup.members){
           if (this.currentGroup.members[memb].uid === this.currentGroup.groupLeader){
@@ -449,8 +446,6 @@ export default {
     // Close the adding member dialog
     closeAddingMemberDialog: function() {
       this.addingMemberDialog = false
-      // 清理new member
-      this.clearMember()
     },
     deleteMember: function(payload) {
       // 删除前确认
@@ -459,6 +454,12 @@ export default {
         // 删除
         this.deleteMemberHelper(payload)
       }
+    },
+    // close the manage group dialog
+    closeManageMemberDialog: function() {
+      this.discard()
+      this.currentGroup.name = this.oldGroupNameBeforeChange
+      this.oldGroupNameBeforeChange = ''
     },
     // 清除痕迹（这包括关闭修改卡）
     discard: function() {
@@ -631,7 +632,7 @@ export default {
       this.Logout = false
       this.$store.dispatch('logout')
       firebase.auth().signOut()
-    }
+    },
   }
 }
 </script>
