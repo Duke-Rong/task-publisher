@@ -43,7 +43,7 @@
                       <div
                       v-for="(members,indx) in groups.members"
                       :key="indx"
-                      v-on:click="ShowHisCards(members)">
+                      v-on:click="ShowHisCards(index, members)">
                         <v-list-tile avatar>
                         <v-list-tile-avatar>
                           <v-icon>label</v-icon>
@@ -854,7 +854,10 @@ export default {
     },
     // 当点击某人的名字时，在MainPage里展示他的卡片
     // 通过将三元素传递到store里实现
-    ShowHisCards: function(payload) {
+    ShowHisCards: function(id, payload) {
+      // set current group
+      this.currentGroupID = id
+      this.resetCurrentGroup()
       // set current
       this.setToCurrent(payload)
       // leader presssed = false

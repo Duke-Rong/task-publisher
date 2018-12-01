@@ -28,14 +28,14 @@
           v-show="currentShowingLeader">
           <v-container fluid grid-list-md>
             <v-layout row wrap>
-              <v-flex xs12 style="text-align:center"
-            v-for="(cards,cardsIndex) in currentCards"
-            :key="cardsIndex"
-            v-show="cards.finished === currentShowingFinished">
-              <h3> {{ cards.ownerName }} </h3>
-              <br>
-              <cards v-bind:card="cards"/>
-              <br>
+              <v-flex xs12 class="ScrollStyle"
+              v-for="(cards,cardsIndex) in currentCards"
+              :key="cardsIndex"
+              v-show="cards.finished === currentShowingFinished">
+                <h3> {{ cards.ownerName }} </h3>
+                <br>
+                <cards v-bind:card="cards"/>
+                <br>
               </v-flex>
             </v-layout>
           </v-container>
@@ -170,6 +170,7 @@ export default {
     },
     // Sort the cards depending on which sort user wants
     sortTheCards(cardsToBeSort) {
+      console.log(cardsToBeSort)
       const sortType = this.$store.getters.getSortType
       const antisort = this.$store.getters.getAntiSort
       // 由于不能直接对currentCards进行sort，

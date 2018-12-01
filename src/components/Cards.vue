@@ -16,7 +16,7 @@
                   <div>Description: {{ card.description }}</div>
                     <v-layout
                       row>
-                      <v-flex xs1>Importance:</v-flex>
+                      <v-flex xs3>Importance:</v-flex>
                       <v-icon
                           v-show="card.importance > 0"
                           color="yellow">star</v-icon>
