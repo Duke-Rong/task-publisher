@@ -50,7 +50,7 @@
          <!-- Sort by Member -->
         <v-list-tile>
           <v-list-tile-action>
-            <v-switch v-model="sortByDueDate" v-on:click="sortBy(3)" color="purple"/>
+            <v-switch v-model="sortByMember" v-on:click="sortBy(3)" color="purple"/>
           </v-list-tile-action>
           <v-list-tile-title>
             Sort By Member name
@@ -98,7 +98,8 @@ export default {
       help: false,
       sortByImportance: false,
       sortByDueDate: false,
-      sortByCreateTime: false
+      sortByCreateTime: false,
+      sortByMember: false
     }
   },
   computed: {
@@ -156,14 +157,22 @@ export default {
         this.sortByImportance = false
         this.sortByDueDate = false
         this.sortByCreateTime = true
+        this.sortByMember = false
       } else if (payload == 1){
         this.sortByImportance = true
         this.sortByDueDate = false
         this.sortByCreateTime = false
+        this.sortByMember = false
       } else if (payload == 2){
         this.sortByImportance = false
         this.sortByDueDate = true
         this.sortByCreateTime = false
+        this.sortByMember = false
+      } else if (payload == 3){
+        this.sortByImportance = false
+        this.sortByDueDate = false
+        this.sortByCreateTime = false
+        this.sortByMember = true
       }
     },
     antisort() {
