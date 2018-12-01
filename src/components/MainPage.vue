@@ -1,33 +1,49 @@
 <template>
   <div>
-    <br>
-    <!-- 当一般情况下，显示单人的卡片 -->
-    <div v-show="!currentShowingLeader" style="text-align:center">
-      <h3> {{ currentMember.name }} </h3>
-      <div
-      v-for="(cards,cardsIndex) in currentCards"
-      :key="cardsIndex"
-      v-show="cards.finished === currentShowingFinished">
-        <cards v-bind:card="cards"/>
-        <br>
-      </div>
-      <v-btn v-on:click="addCard()" v-show="!currentShowingFinished && currentGroup.groupLeader === currentUser || currentMember.uid === currentUser" dark color="blue-grey darken-2" ripple round>
-        <v-icon>add</v-icon>
-      </v-btn>
-    </div>
+      <!-- settle the size of the inside container -->
+        <v-container fluid class="insideContainer">
+          <v-layout row wrap>
+            <v-flex xs12>
 
-    <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
-    <!-- sort仅对currentCards有效，对leader无效 -->
-    <div
-    v-show="currentShowingLeader">
-      <div
-      v-for="(cards,cardsIndex) in currentCards"
-      :key="cardsIndex"
-      v-show="cards.finished === currentShowingFinished">
-        <h3> Assigned to: {{ cards.ownerName }} </h3>
-        <cards v-bind:card="cards"/>
-      </div>
-    </div>
+              <!-- 当一般情况下，显示单人的卡片 -->
+              <div v-show="!currentShowingLeader">
+                <h3 style="text-align:center"> {{ currentMember.name }} </h3>
+                <br>
+                <div
+                v-for="(cards,cardsIndex) in currentCards"
+                :key="cardsIndex"
+                v-show="cards.finished === currentShowingFinished">
+                  <cards v-bind:card="cards"/>
+                  <br>
+                </div>
+                <div style="text-align:center">
+                  <v-btn v-on:click="addCard()" v-show="!currentShowingFinished && currentGroup.groupLeader === currentUser || currentMember.uid === currentUser" dark color="blue-grey darken-2" ripple round>
+                    <v-icon>add</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+              <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
+              <!-- sort仅对currentCards有效，对leader无效 -->
+              <div
+              v-show="currentShowingLeader">
+              <v-container fluid grid-list-md>
+                <v-layout row wrap>
+                  <v-flex xs12 style="text-align:center"
+                v-for="(cards,cardsIndex) in currentCards"
+                :key="cardsIndex"
+                v-show="cards.finished === currentShowingFinished">
+                  <h3> Assigned to: {{ cards.ownerName }} </h3>
+                  <br>
+                  <cards v-bind:card="cards"/>
+                  <br>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+              </div>
+
+            </v-flex>
+          </v-layout>
+        </v-container>
 
     <v-dialog
     v-model="currentAddingCards">
@@ -86,7 +102,6 @@ export default {
         ownerIDInGroup: '',
         finished: false
       },
-      // 这个开关决定了当前是否在增加cards
       currentAddingCards: false
     }
   },
@@ -169,6 +184,7 @@ export default {
       // pay attention to anti-sort or not!
       function compare (a, b) {
         if (sortType === 1) {
+          // sort by importance
           if (a.importance > b.importance) {
             if (antisort) { return 1 } else { return -1 }
           }
@@ -176,6 +192,7 @@ export default {
             if (antisort) { return -1 } else { return 1 }
           }
         } else if (sortType === 2) {
+          // sort by due date
           if (new Date(a.dueDate + ' ' + a.dueTimee) < new Date(b.dueDate + ' ' + b.dueTime)) {
             if (antisort) { return 1 } else { return -1 }
           }
@@ -183,12 +200,16 @@ export default {
             if (antisort) { return -1 } else { return 1 }
           }
         } else if (sortType === 0) {
+          // sort by create time
           if (a.addTime < b.addTime) {
             if (antisort) { return 1 } else { return -1 }
           }
           if (a.addTime > b.addTime) {
             if (antisort) { return -1 } else { return 1 }
           }
+        } else if (sortType === 3) {
+          // Leader form
+          // do nothing
         }
         return 0
       }
@@ -235,4 +256,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  .insideContainer {
+    position: absolute;
+    width: 80%;
+    left: 80px;
+    top: 125px;
+    background-color:lightgrey
+  }
 </style>

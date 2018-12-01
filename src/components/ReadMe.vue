@@ -65,34 +65,21 @@ setTimeout(() => {
 }, 500)
 
 
-<!-- 显示属于user的卡片 -->
-                  <v-card>
-                    <v-layout row wrap>
-                      <v-flex xs10>
-                        <!-- 展示组名 -->
-                        <v-card-title v-on:click="changeGroupExtensionVisibility(groups,index)">
-                          <h3> {{ groups.name }} </h3>
-                        </v-card-title>
-                        <!-- 展示组下所有成员-->
-                        <v-card-text v-show="groupsExtendSwitch[index]">
-                          <div
-                          v-for="(members,indx) in groups.members"
-                          :key="indx"
-                          v-on:click="ShowHisCards(members)">
-                            <v-layout row>
-                              <v-spacer></v-spacer>
-                              <router-link :to="'/mainpage/' + members.id">{{ members.name }}</router-link>
-                            </v-layout>
-                          </div>
-                        </v-card-text>
-                      </v-flex>
-                      <v-flex>
-                        <v-card-actions>
-                          <v-btn icon v-on:click="set(groups,index)">
-                            <v-icon>toc</v-icon>
-                          </v-btn>
-                        </v-card-actions>
-                      </v-flex>
-                    <v-divider></v-divider>
-                    </v-layout>
-                  </v-card>
+              <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
+              <!-- sort仅对currentCards有效，对leader无效 -->
+              <div
+              v-show="currentShowingLeader">
+              <v-container fluid grid-list-md>
+                <v-layout row wrap>
+                  <v-flex xs12 style="text-align:center"
+                v-for="(cards,cardsIndex) in currentCards"
+                :key="cardsIndex"
+                v-show="cards.finished === currentShowingFinished">
+                  <h3> Assigned to: {{ cards.ownerName }} </h3>
+                  <br>
+                  <cards v-bind:card="cards"/>
+                  <br>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+              </div>

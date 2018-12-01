@@ -47,6 +47,15 @@
             Sort By Due date
           </v-list-tile-title>
         </v-list-tile>
+         <!-- Sort by Member -->
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-switch v-model="sortByDueDate" v-on:click="sortBy(3)" color="purple"/>
+          </v-list-tile-action>
+          <v-list-tile-title>
+            Sort By Member name
+          </v-list-tile-title>
+        </v-list-tile>
       </v-list>
     </v-menu>
 

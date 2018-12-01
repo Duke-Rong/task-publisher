@@ -43,6 +43,7 @@ const state = {
   // 0: sort by add time, 即原始情况
   // 1: sort by importance
   // 2: sort by due time
+  // 3: sort by member name
   sortType: 0,
   // 当anit-sort开启时，进行反向排序
   anti_sort: false,
@@ -205,13 +206,7 @@ const mutations = {
   // 传入：payload[0]是group, payload[1]是member
   [ADD_MEMBER] (state, payload) {
     // 获取新组员名字.
-    // 若是有display name则使用那个名字
-    if (payload[1].displayName){
-      state.newMember.name = payload[1].displayName
-    } else {
-      // 没有就用email
-      state.newMember.name = payload[1].email
-    }
+    state.newMember.name = payload[1].name
     state.newMember.uid = payload[1].uid
     // 将其push进该组，并用同样的方法获取member id
     state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
@@ -253,13 +248,15 @@ const mutations = {
   // when the leader button is pushed,
   // set the current cards to all the cards in the current group
   [SET_CURRENT_CARD_TO_LEADER_FORM] (state) {
-    var updates = {}
+    // put cards under all members into current cards
+    var tempCurrentCards = []
     for (var members in state.currentGroup.members){
       for (var cards in state.currentGroup.members[members].cards){
-        updates[cards] = state.currentGroup.members[members].cards[cards]
+        tempCurrentCards[tempCurrentCards.length] = state.currentGroup.members[members].cards[cards]
       }
     }
-    state.currentCards = updates
+    state.currentCards = tempCurrentCards
+    state.sortType = 3
   },
   // 传入：card.id
   // 修改current group的所属member的该卡片
@@ -269,7 +266,19 @@ const mutations = {
     db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').update(updates)
   },
   [DELETE_CARD] (state, payload) {
-    db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').child(payload.id).remove()
+    db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').child(payload.id).remove().then(function(){
+      // 当他是leader模式时，current cards里面应该还是该group内的所有cards
+      if (state.LeaderButtonPushed){
+        var tempCurrentCards = []
+        for (var members in state.currentGroup.members){
+          for (var cards in state.currentGroup.members[members].cards){
+            tempCurrentCards[tempCurrentCards.length] = state.currentGroup.members[members].cards[cards]
+          }
+        }
+        state.currentCards = updates
+        state.sortType = 3
+      }
+    })
   },
   // Set the anti sort
   [ANTI_SORT] (state) {
