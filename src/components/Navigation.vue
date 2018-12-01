@@ -36,7 +36,7 @@
                       </v-list-tile>
                     </div>
                     <!-- 点击后会展开 -->
-                    <div v-else>
+                    <div v-else class="ScrollStyle">
                       <!-- 展开后show v-subheader -->
                       <v-subheader v-on:click="changeGroupExtensionVisibility(groups,index)">{{ groups.name }}</v-subheader>
                       <!-- 展示组下所有成员-->
@@ -952,8 +952,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    .navigation {
-        background-color: gold;
-        background-size: 100% 100%;
-    }
+  .navigation {
+      background-color: gold;
+      background-size: 100% 100%;
+  }
+  .ScrollStyle  {
+  max-height: 500px;
+  overflow-y: scroll;
+  }
 </style>

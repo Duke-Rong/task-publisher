@@ -1,49 +1,47 @@
 <template>
   <div>
-      <!-- settle the size of the inside container -->
-        <v-container fluid class="insideContainer">
-          <v-layout row wrap>
-            <v-flex xs12>
-
-              <!-- 当一般情况下，显示单人的卡片 -->
-              <div v-show="!currentShowingLeader">
-                <h3 style="text-align:center"> {{ currentMember.name }} </h3>
-                <br>
-                <div
-                v-for="(cards,cardsIndex) in currentCards"
-                :key="cardsIndex"
-                v-show="cards.finished === currentShowingFinished">
-                  <cards v-bind:card="cards"/>
-                  <br>
-                </div>
-                <div style="text-align:center">
-                  <v-btn v-on:click="addCard()" v-show="!currentShowingFinished && currentGroup.groupLeader === currentUser || currentMember.uid === currentUser" dark color="blue-grey darken-2" ripple round>
-                    <v-icon>add</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
-              <!-- sort仅对currentCards有效，对leader无效 -->
-              <div
-              v-show="currentShowingLeader">
-              <v-container fluid grid-list-md>
-                <v-layout row wrap>
-                  <v-flex xs12 style="text-align:center"
-                v-for="(cards,cardsIndex) in currentCards"
-                :key="cardsIndex"
-                v-show="cards.finished === currentShowingFinished">
-                  <h3> Assigned to: {{ cards.ownerName }} </h3>
-                  <br>
-                  <cards v-bind:card="cards"/>
-                  <br>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-              </div>
-
-            </v-flex>
-          </v-layout>
-        </v-container>
+    <!-- settle the size of the inside container -->
+    <v-container fluid class="insideContainer">
+      <v-layout row wrap>
+        <v-flex xs12 class="ScrollStyle">
+        <!-- 当一般情况下，显示单人的卡片 -->
+          <div v-show="!currentShowingLeader">
+            <h3 style="text-align:center"> {{ currentMember.name }} </h3>
+            <br>
+            <div
+            v-for="(cards,cardsIndex) in currentCards"
+            :key="cardsIndex"
+            v-show="cards.finished === currentShowingFinished">
+              <cards v-bind:card="cards"/>
+              <br>
+            </div>
+            <div style="text-align:center">
+              <v-btn v-on:click="addCard()" v-show="!currentShowingFinished && currentGroup.groupLeader === currentUser || currentMember.uid === currentUser" dark color="blue-grey darken-2" ripple round>
+                <v-icon>add</v-icon>
+              </v-btn>
+            </div>
+          </div>
+          <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
+          <!-- sort仅对currentCards有效，对leader无效 -->
+          <div
+          v-show="currentShowingLeader">
+          <v-container fluid grid-list-md>
+            <v-layout row wrap>
+              <v-flex xs12 style="text-align:center"
+            v-for="(cards,cardsIndex) in currentCards"
+            :key="cardsIndex"
+            v-show="cards.finished === currentShowingFinished">
+              <h3> Assigned to: {{ cards.ownerName }} </h3>
+              <br>
+              <cards v-bind:card="cards"/>
+              <br>
+              </v-flex>
+            </v-layout>
+          </v-container>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-container>
 
     <v-dialog
     v-model="currentAddingCards">
@@ -261,6 +259,11 @@ export default {
     width: 80%;
     left: 80px;
     top: 125px;
+    max-height: 550px;
     background-color:lightgrey
+  }
+  .ScrollStyle  {
+    max-height: 500px;
+    overflow-y: scroll;
   }
 </style>

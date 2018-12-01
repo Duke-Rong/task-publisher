@@ -65,6 +65,27 @@ setTimeout(() => {
 }, 500)
 
 
+
+
+
+
+<!-- 当一般情况下，显示单人的卡片 -->
+              <div v-show="!currentShowingLeader">
+                <h3 style="text-align:center"> {{ currentMember.name }} </h3>
+                <br>
+                <div
+                v-for="(cards,cardsIndex) in currentCards"
+                :key="cardsIndex"
+                v-show="cards.finished === currentShowingFinished">
+                  <cards v-bind:card="cards"/>
+                  <br>
+                </div>
+                <div style="text-align:center">
+                  <v-btn v-on:click="addCard()" v-show="!currentShowingFinished && currentGroup.groupLeader === currentUser || currentMember.uid === currentUser" dark color="blue-grey darken-2" ripple round>
+                    <v-icon>add</v-icon>
+                  </v-btn>
+                </div>
+              </div>
               <!-- 当leader按钮被按下后，显示该组内所有人卡片 -->
               <!-- sort仅对currentCards有效，对leader无效 -->
               <div
@@ -83,3 +104,5 @@ setTimeout(() => {
                 </v-layout>
               </v-container>
               </div>
+
+
