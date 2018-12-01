@@ -9,7 +9,7 @@
         <v-toolbar color="black" dark>
           <h3 v-on:click="profile()">Welcome, <br> {{ user.email }}</h3>
         </v-toolbar>
-          <v-list subheader>
+          <v-list subheader class="OutsideScrollStyle">
             <v-subheader>Groups</v-subheader>
             <!-- for loop. 展示所有groups里面的卡 -->
             <div v-for="(groups,index) in groupsInDatabase" :key="index">
@@ -953,11 +953,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .navigation {
-      background-color: gold;
-      background-size: 100% 100%;
+    background-color: gold;
+    background-size: 100% 100%;
   }
   .ScrollStyle  {
-  max-height: 500px;
-  overflow-y: scroll;
+    max-height: 500px;
+    overflow-y: scroll;
+  }
+  .OutsideScrollStyle  {
+    max-height: 659px;
+    overflow-y: scroll;
   }
 </style>

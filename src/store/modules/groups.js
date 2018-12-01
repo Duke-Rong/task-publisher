@@ -205,15 +205,26 @@ const mutations = {
   // 由Add传递。payload内含需要增加的组员和群id
   // 传入：payload[0]是group, payload[1]是member
   [ADD_MEMBER] (state, payload) {
-    // 获取新组员名字.
-    state.newMember.name = payload[1].name
-    state.newMember.uid = payload[1].uid
-    // 将其push进该组，并用同样的方法获取member id
-    state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
-    // 替换掉没有id的members
-    var updates = {}
-    updates[state.newMember.id] = state.newMember
-    db.ref('/groups/' + payload[0].id + '/members').update(updates)
+    var memberAlreadyInGroup = false
+    // check if the member is already in the group
+    for (var members in payload[0].members){
+      if (payload[1].uid === payload[0].members[members].uid){
+        alert('This member is already in the group')
+        memberAlreadyInGroup = true
+      }
+    }
+    // If he is not in the group, good
+    if (!memberAlreadyInGroup){
+      // 获取新组员名字.
+      state.newMember.name = payload[1].name
+      state.newMember.uid = payload[1].uid
+      // 将其push进该组，并用同样的方法获取member id
+      state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
+      // 替换掉没有id的members
+      var updates = {}
+      updates[state.newMember.id] = state.newMember
+      db.ref('/groups/' + payload[0].id + '/members').update(updates)
+    }
   },
   // 传入：组id和member id
   [DELETE_MEMBER] (state, payload) {

@@ -1,7 +1,8 @@
 <template>
   <div>
     <!-- settle the size of the inside container -->
-    <v-container fluid class="insideContainer">
+    <!-- If no members are current, show nothing -->
+    <v-container v-if="currentMember.uid" fluid class="insideContainer">
       <v-layout row wrap>
         <v-flex xs12 class="ScrollStyle">
         <!-- 当一般情况下，显示单人的卡片 -->
@@ -31,7 +32,7 @@
             v-for="(cards,cardsIndex) in currentCards"
             :key="cardsIndex"
             v-show="cards.finished === currentShowingFinished">
-              <h3> Assigned to: {{ cards.ownerName }} </h3>
+              <h3> {{ cards.ownerName }} </h3>
               <br>
               <cards v-bind:card="cards"/>
               <br>
@@ -110,14 +111,14 @@ export default {
       if (this.$store.getters.getCurrentGroup){
         return this.$store.getters.getCurrentGroup
       } else {
-        return null
+        return { groupLeader: ''}
       }
     },
     currentMember() {
       if (this.$store.getters.getCurrentMember){
         return this.$store.getters.getCurrentMember
       } else {
-        return null
+        return { name: '' }
       }
     },
     currentCards() {
