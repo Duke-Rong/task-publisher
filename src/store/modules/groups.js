@@ -14,7 +14,7 @@ import { READ_GROUP,
   SET_SORT_TYPE,
   ANTI_SORT,
   CHANGE_FINISH_VISION,
-  LOG_OUT} from '@/store/mutation-types'
+  LOG_OUT,} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -28,6 +28,8 @@ const state = {
   // 需要clear!
 
   groups: [],
+  // We need password for users to change the file
+  currentUserPassword: '',
   // 当前本项目的使用者
   currentUser: '',
   currentGroup: '',
@@ -128,7 +130,6 @@ const mutations = {
   // 这玩意貌似会自动更新！
   // 传入：group id, member id
   [SET_CURRENT] (state, payload) {
-    console.log('group.js: ' + payload)
     if(state.groups[payload[0]]) {
       state.currentGroup = state.groups[payload[0]]
       if (state.currentGroup.members[payload[1]]) {

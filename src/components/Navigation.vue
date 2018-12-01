@@ -7,7 +7,7 @@
       <v-card>
         <!-- User profile -->
         <v-toolbar color="black" dark>
-          <h3 v-on:click="profile()">Welcome, <br> {{ user.displayName }}</h3>
+          <h3 v-on:click="profile()">Welcome, <br> {{ user.email }}</h3>
         </v-toolbar>
           <v-list subheader>
             <v-subheader>Groups</v-subheader>
@@ -99,89 +99,89 @@
   <v-dialog
   v-model="CurrentlyManagingTheGroup"
   max-width="500px">
-      <v-card>
-        <v-card-title>
-          <div v-if="currentGroup.groupLeader === user.uid" class="headline">
-            <input type="text" v-model="currentGroup.name">
-          </div>
-          <span v-else class="headline"> {{ currentGroup.name }} </span>
-          <!-- 当user = group leader时才会出现group id -->
-          <v-tooltip bottom>
-            <v-label slot="activator" v-if="currentGroup.groupLeader === user.uid"> Group ID: {{ currentGroup.id }} </v-label>
-            <span>Give this group id to your member so they can join your group!</span>
-          </v-tooltip>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12>
+    <v-card>
+      <v-card-title>
+        <div v-if="currentGroup.groupLeader === user.uid" class="headline">
+          <input type="text" v-model="currentGroup.name">
+        </div>
+        <span v-else class="headline"> {{ currentGroup.name }} </span>
+        <!-- 当user = group leader时才会出现group id -->
+        <v-tooltip bottom>
+          <v-label slot="activator" v-if="currentGroup.groupLeader === user.uid"> Group ID: {{ currentGroup.id }} </v-label>
+          <span>Give this group id to your member so they can join your group!</span>
+        </v-tooltip>
+      </v-card-title>
+      <v-card-text>
+        <v-container grid-list-md>
+          <v-layout wrap>
+            <v-flex xs12>
 
-                <v-list subheader>
-                  <v-subheader>Group members</v-subheader>
-                  <!-- group members -->
-                  <div v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
-                    :key="membersShownInManageTheGroup">
-                      <v-divider></v-divider>
-                      <!-- 此处需要对不同用户显示不同的东西 -->
-                      <!-- 当组员名不是当前用户时，显示paragraph -->
-                      <v-list-tile avatar v-if="members.uid !== user.uid">
-                      <v-list-tile-avatar>
-                        <v-icon>label</v-icon>
-                      </v-list-tile-avatar>
-                      <v-list-tile-content>
-                        <v-list-tile-title>
-                          {{ members.name }}
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                      <!-- 当用户是组长时，显示删除组员按钮 -->
-                      <v-list-tile-action>
-                        <v-btn icon
-                        v-if="user.uid === currentGroup.groupLeader"
-                        v-on:click="deleteMember(members)">
-                          <v-icon>delete</v-icon>
-                        </v-btn>
-                      </v-list-tile-action>
-                    </v-list-tile>
-                    <!-- 当组员名是当前用户时，显示input好修改名字 -->
-                    <v-list-tile avatar v-else>
-                      <v-list-tile-avatar>
-                        <v-icon>label</v-icon>
-                      </v-list-tile-avatar>
-                      <v-list-tile-content>
-                        <v-list-tile-title>
-                          <input v-model="members.name">
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                      <!-- 当用户是组员时，出现退出按钮 -->
-                      <v-list-tile-action>
-                        <v-btn icon v-on:click="quit(members)">
-                          <v-icon>cancel</v-icon>
-                        </v-btn>
-                      </v-list-tile-action>
-                    </v-list-tile>
-                  </div>
-                <v-divider></v-divider>
-                <v-list-tile avatar v-on:click="addMemberHelper" v-if="user.uid === currentGroup.groupLeader">
-                  <v-list-tile-avatar small color="primary">
-                    <v-icon dark>person_add</v-icon>
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <v-list-tile-title>
-                      Add a member
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                </v-list>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red darken-1" flat v-on:click="closeManageMemberDialog">Close</v-btn>
-          <v-btn color="blue darken-1" flat v-on:click="confirmChange">Save</v-btn>
-        </v-card-actions>
-      </v-card>
+              <v-list subheader>
+                <v-subheader>Group members</v-subheader>
+                <!-- group members -->
+                <div v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
+                  :key="membersShownInManageTheGroup">
+                    <v-divider></v-divider>
+                    <!-- 此处需要对不同用户显示不同的东西 -->
+                    <!-- 当组员名不是当前用户时，显示paragraph -->
+                    <v-list-tile avatar v-if="members.uid !== user.uid">
+                    <v-list-tile-avatar>
+                      <v-icon>label</v-icon>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title>
+                        {{ members.name }}
+                      </v-list-tile-title>
+                    </v-list-tile-content>
+                    <!-- 当用户是组长时，显示删除组员按钮 -->
+                    <v-list-tile-action>
+                      <v-btn icon
+                      v-if="user.uid === currentGroup.groupLeader"
+                      v-on:click="deleteMember(members)">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-list-tile-action>
+                  </v-list-tile>
+                  <!-- 当组员名是当前用户时，显示input好修改名字 -->
+                  <v-list-tile avatar v-else>
+                    <v-list-tile-avatar>
+                      <v-icon>label</v-icon>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title>
+                        <input v-model="members.name">
+                      </v-list-tile-title>
+                    </v-list-tile-content>
+                    <!-- 当用户是组员时，出现退出按钮 -->
+                    <v-list-tile-action>
+                      <v-btn icon v-on:click="quit(members)">
+                        <v-icon>cancel</v-icon>
+                      </v-btn>
+                    </v-list-tile-action>
+                  </v-list-tile>
+                </div>
+              <v-divider></v-divider>
+              <v-list-tile avatar v-on:click="addMemberHelper" v-if="user.uid === currentGroup.groupLeader">
+                <v-list-tile-avatar small color="primary">
+                  <v-icon dark>person_add</v-icon>
+                </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>
+                    Add a member
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              </v-list>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="red darken-1" flat v-on:click="closeManageMemberDialog">Close</v-btn>
+        <v-btn color="blue darken-1" flat v-on:click="confirmChange">Save</v-btn>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
 
   <!-- 组长退出时候发生的对话 -->
@@ -312,32 +312,161 @@
     v-model="ProfileDialog"
     max-width="500px">
       <v-card>
-        <v-card-title class="headline">
-          Profile
+        <v-card-title>
+          <v-layout column>
+            <v-flex class="headline">
+              Profile
+            </v-flex>
+            <v-tooltip bottom>
+              <v-label slot="activator">user id: {{ user.uid }}</v-label>
+              <span>Here is your unique user id. Give your user id to your group leader to be involved</span>
+            </v-tooltip>
+          </v-layout>
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
-                <v-tooltip bottom>
-                  <h3 slot="activator">Your user id: {{ user.uid }}</h3>
-                  <span>Here is your unique user id. Give your user id to your group leader to be involved</span>
-                </v-tooltip>
-              </v-flex>
-              <v-flex xs12>
-                <br>
-                <h3>Your email: {{ user.email }} </h3>
+                <v-window v-model="step">
+                  <v-window-item :value="1">
+                    <!-- User profile -->
+                    <v-list>
+                      <!-- user email -->
+                      <v-list-tile avatar>
+                        <v-list-tile-avatar>
+                          <v-icon>email</v-icon>
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                          <v-list-tile-title>
+                            Email: {{ user.email }}
+                          </v-list-tile-title>
+                        </v-list-tile-content>
+                        <!-- 修改email -->
+                        <v-list-tile-action>
+                          <v-btn icon @click="changeEmailHelper()">
+                            <v-icon>keyboard_arrow_right</v-icon>
+                          </v-btn>
+                        </v-list-tile-action>
+                      </v-list-tile>
+                      <v-divider></v-divider>
+                      <!-- user Password -->
+                      <v-list-tile avatar>
+                        <v-list-tile-avatar>
+                          <v-icon>fingerprint</v-icon>
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                          <v-list-tile-title>
+                            Password
+                          </v-list-tile-title>
+                        </v-list-tile-content>
+                        <!-- Change password -->
+                        <v-list-tile-action>
+                          <v-btn icon @click="step=3">
+                            <v-icon>keyboard_arrow_right</v-icon>
+                          </v-btn>
+                        </v-list-tile-action>
+                      </v-list-tile>
+                      <v-divider></v-divider>
+                      <!-- user Display name -->
+                      <v-list-tile avatar>
+                        <v-list-tile-avatar>
+                          <v-icon>face</v-icon>
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                          <v-list-tile-title>
+                            Nick name: {{ user.displayName }}
+                          </v-list-tile-title>
+                        </v-list-tile-content>
+                        <!-- Change password -->
+                        <v-list-tile-action>
+                          <v-btn icon @click="changeNicknameHelper()">
+                            <v-icon>keyboard_arrow_right</v-icon>
+                          </v-btn>
+                        </v-list-tile-action>
+                      </v-list-tile>
+                      <v-divider></v-divider>
+                    </v-list>
+                  </v-window-item>
+                  <!-- Change email -->
+                  <v-window-item :value="2">
+                    <v-card-text>
+                      <h3>New email:</h3>
+                      <v-text-field v-model="oldUser.email" clearable></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-btn flat @click="step=1">Back</v-btn>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" @click="authorize=true">change</v-btn>
+                    </v-card-actions>
+                  </v-window-item>
+                  <!-- Change password -->
+                  <v-window-item :value="3">
+                    <v-card-text>
+                      <v-text-field
+                        label="Old Password"
+                        type="password"
+                        v-model="oldUser.password"
+                      ></v-text-field>
+                      <v-text-field
+                        label="New Password"
+                        type="password"
+                        v-model="oldUser.newPassword"
+                      ></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-btn flat @click="step=1">Back</v-btn>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" @click="resetPassword(oldUser.password,oldUser.newPassword)">change</v-btn>
+                    </v-card-actions>
+                  </v-window-item>
+                  <!-- Change nickname -->
+                  <v-window-item :value="4">
+                    <v-card-text>
+                      <h3>New Nickname:</h3>
+                      <v-text-field v-model="oldUser.nickname" clearable></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-btn flat @click="step=1">Back</v-btn>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" @click="changeNickName(oldUser.nickname)">change</v-btn>
+                    </v-card-actions>
+                  </v-window-item>
+                </v-window>
               </v-flex>
             </v-layout>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red darken-1" flat v-on:click="resetPassword()">Reset Password</v-btn>
-          <v-btn color="blue darken-1" flat @click="ProfileDialog=false">Close</v-btn>
-          <v-btn color="red darken-1" flat v-on:click="logout()">Log out</v-btn>
+          <v-btn v-if="step === 1" color="blue darken-1" flat @click="ProfileDialog=false">Close</v-btn>
+          <v-btn v-if="step === 1" color="red darken-1" flat v-on:click="logout()">Log out</v-btn>
         </v-card-actions>
       </v-card>
+    </v-dialog>
+
+    <!-- 当要修改email或者密码时弹出的再次索取密码的对话框 -->
+    <v-dialog
+    v-model="authorize"
+    max-width="400px">
+    <v-card>
+      <v-card-title>
+        Authorization
+      </v-card-title>
+      <v-card-text>
+        <v-container grid-list-md>
+          <v-layout wrap>
+            <v-flex xs12>
+              <v-text-field type="password" label="Please input your password again" v-model="oldUser.password" hint="Change email need your authorization"></v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn flat @click="authorize=false">Close</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" flat @click="changeEmail(oldUser.email, oldUser.password)">Confirm</v-btn>
+      </v-card-actions>
+    </v-card>
     </v-dialog>
 
     <!-- 登出时的对话 -->
@@ -400,6 +529,16 @@ export default {
         ownerIDInGroup: '',
         finished: false
       },
+      // 修改前的user profile
+      oldUser: {
+        email: null,
+        password: null,
+        nickname: null,
+        // 为授权所获取的password
+        password: null,
+        // 新的password
+        newPassword: null
+      },
       // 当前正在修改的组，由set()传递
       currentGroup: {},
       currentGroupID: '',
@@ -419,16 +558,25 @@ export default {
       CurrentlyDeletingLeader: false,
       // 新的组长是谁
       newLeader: '',
-      // 这个开关决定了决定ACreate group的dialoag的出现与否
+      // 这个开关决定了ACreate group的dialoag的出现与否
       CurrentlyCreatingGroup: false,
-      // 这个开关决定了决定Add into group的dialoag的出现与否
+      // 这个开关决定了Add into group的dialoag的出现与否
       CurrentlyAddingIntoAGroup: false,
-      // 这个开关决定了决定group not found的dialoag的出现与否
+      // 这个开关决定了group not found的dialoag的出现与否
       GroupNotFound: false,
-      // 这个开关决定了决定profile的dialoag的出现与否
+      // 这个开关决定了profile的dialoag的出现与否
       ProfileDialog: false,
-      // 这个开关决定了决定log out的dialoag的出现与否
+      // 这个开关决定了log out的dialoag的出现与否
       Logout: false,
+      // 这个开关决定了change profile时出现哪个window
+      // 1: default
+      // 2: change email
+      // 3: change password
+      // 4: change display name
+      step: 1,
+      // 这个开关决定了authorize的dialog的出现与否
+      // 当用户要更改邮箱或密码时，需要用户再次输入自己的密码来获取权限
+      authorize: false,
       // 这个值保存了想加入的group
       GroupIDGoingToAdd: '',
       // 当增加members时传递到store里的内容
@@ -734,21 +882,69 @@ export default {
       this.$store.dispatch('logout')
       firebase.auth().signOut()
     },
-    resetPassword: function() {
-      /*
-      firebase.auth().sendPasswordResetEmail(this.user.email).then(function() {
-        console.log('sent')
+    // update the email for the user
+    changeEmail: function(newEmail, thepassword) {
+      // create the credential to update
+      const credential = firebase.auth.EmailAuthProvider.credential(
+        this.user.email,
+        thepassword
+      )
+      const tempuser = firebase.auth().currentUser
+      // re autherize
+      tempuser.reauthenticateAndRetrieveDataWithCredential(credential).then(function() {
+        tempuser.updateEmail(newEmail).then(function() {
+          // after successfully update the email, reload the page
+          location.reload()
+        }).catch(function(error) {
+          // Otherwise, the error will be caught
+          alert(error.message)
+        });
       }).catch(function(error) {
-        console.log(error)
+        // Otherwise, the error will be caught
+        alert(error.message)
       });
-      */
-     firebase.auth().currentUser.updateProfile({
-  displayName: "Jane Q. User",
-}).then(function() {
-  console.log(firebase.auth().currentUser.displayName)
-}).catch(function(error) {
-  // An error happened.
-});
+    },
+    // open the change email dialog
+    changeEmailHelper: function() {
+      this.step = 2
+      this.oldUser.email = this.user.email
+    },
+    // reset password
+    resetPassword: function(oldPassword, newPassword) {
+      // create the credential to update
+      const credential = firebase.auth.EmailAuthProvider.credential(
+        this.user.email,
+        oldPassword
+      )
+      const tempuser = firebase.auth().currentUser
+      // re autherize
+      tempuser.reauthenticateAndRetrieveDataWithCredential(credential).then(function() {
+        tempuser.updatePassword(newPassword).then(function() {
+          // after successfully update the email, reload the page
+          location.reload()
+        }).catch(function(error) {
+          // Otherwise, the error will be caught
+          alert('New password problem: ' + error.message)
+        });
+      }).catch(function(error) {
+        // Otherwise, the error will be caught
+        alert('Old password problem: ' + error.message)
+      });
+    },
+    // change the display name of the user
+    changeNickName: function(newnickname) {
+      firebase.auth().currentUser.updateProfile({
+        displayName: newnickname
+      }).then(function() {
+        location.reload()
+      }).catch(function(error) {
+        alert(error.message)
+      });
+    },
+    // open the change nick name dialog
+    changeNicknameHelper: function(){
+      this.step = 4
+      this.oldUser.nickname = this.user.displayName
     }
   }
 }
