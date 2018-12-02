@@ -4,7 +4,9 @@ import Vue from 'vue'
 import App from './App'
 // vuetify
 import Vuetify from 'vuetify'
-// import 'vuetify/dist/vuetify.min.css'
+import 'vuetify/dist/vuetify.min.css'
+// v-icon
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 // router
 import router from './router'
 // 如果不import store则根本不使用store
@@ -14,6 +16,9 @@ import './services/firebase.conf'
 import firebase from 'firebase'
 
 Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  iconfont: 'mdi'
+})
 Vue.config.silent = false
 Vue.config.performance = true
 Vue.config.productionTip = true
@@ -28,9 +33,10 @@ new Vue({
     // 确认是否已经登录。若是，则跳转至页面；若否，则跳转至登录页面
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.$store.dispatch('setuser',user)
+        this.$store.dispatch('setuser', user)
         this.$router.push('/')
       } else {
+        this.$store.dispatch('setuser', null)
         this.$router.push('/auth')
       }
     })

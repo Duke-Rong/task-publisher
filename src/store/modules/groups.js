@@ -8,12 +8,14 @@ import { READ_GROUP,
   ADD_CARD,
   SET_CURRENT_CARD_TO_LEADER_FORM,
   UPDATE_CARD,
+  DELETE_CARD,
   LEADER_BUTTON,
   SET_USER,
   SET_SORT_TYPE,
   ANTI_SORT,
   CHANGE_FINISH_VISION,
-  LOG_OUT} from '@/store/mutation-types'
+  CHANGE_ADDINGOREDITING_DIALOG,
+  LOG_OUT,} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 
@@ -27,6 +29,8 @@ const state = {
   // 需要clear!
 
   groups: [],
+  // We need password for users to change the file
+  currentUserPassword: '',
   // 当前本项目的使用者
   currentUser: '',
   currentGroup: '',
@@ -40,6 +44,7 @@ const state = {
   // 0: sort by add time, 即原始情况
   // 1: sort by importance
   // 2: sort by due time
+  // 3: sort by member name
   sortType: 0,
   // 当anit-sort开启时，进行反向排序
   anti_sort: false,
@@ -47,6 +52,10 @@ const state = {
   // 当finishVision关闭时，显示未完成的tasks
   // control the vision of Calendar and MainPage
   finishVision: false,
+  // 这个按钮决定了增加/修改card的开关是否打开
+  openAddingOrEditingCardDialog: false,
+  // 传到add card内的卡片
+  toAddNewCardOrEditing: null,
   // groups
   newgroup: {
     name: '',
@@ -115,6 +124,12 @@ const getters = {
   getCurrentCardsAvailable (state) {
     return state.currentCardsAvailable
   },
+  getOpenAddingOrEditingCardDialog (state) {
+    return state.openAddingOrEditingCardDialog
+  },
+  getCardToAddCard (state) {
+    return state.toAddNewCardOrEditing
+  },
 }
 
 const mutations = {
@@ -152,14 +167,6 @@ const mutations = {
   },
   // 设置卡组成currentGroup内的所有members的卡组
   [LEADER_BUTTON] (state, payload) {
-    /*
-    state.currentCards = []
-    for (var membs in state.currentGroup.members){
-      for (var cards in state.currentGroup.members[membs].cards){
-        state.currentCards[state.currentCards.length] = state.currentGroup.members[membs].cards[cards]
-      }
-    }
-    */
     state.LeaderButtonPushed = payload
   },
   // 输入：groupID 输出：该group
@@ -188,7 +195,11 @@ const mutations = {
     groupsDB.update(updates)
     // 这样一来，我们就获取了新的group,包含了完整的id和name
     // 将自己放进去
-    state.newMember.name = state.currentUser.email
+    if (state.currentUser.displayName){
+      state.newMember.name = state.currentUser.displayName
+    } else {
+      state.newMember.name = state.currentUser.email
+    }
     state.newMember.uid = state.currentUser.uid
     state.newMember.id = db.ref('/groups/' + state.newgroup.id + '/members').push(state.newMember).key
     var updatess = {}
@@ -205,15 +216,26 @@ const mutations = {
   // 由Add传递。payload内含需要增加的组员和群id
   // 传入：payload[0]是group, payload[1]是member
   [ADD_MEMBER] (state, payload) {
-    // 获取新组员名字.
-    state.newMember.name = payload[1].name
-    state.newMember.uid = payload[1].uid
-    // 将其push进该组，并用同样的方法获取member id
-    state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
-    // 替换掉没有id的members
-    var updates = {}
-    updates[state.newMember.id] = state.newMember
-    db.ref('/groups/' + payload[0].id + '/members').update(updates)
+    var memberAlreadyInGroup = false
+    // check if the member is already in the group
+    for (var members in payload[0].members){
+      if (payload[1].uid === payload[0].members[members].uid){
+        alert('This member is already in the group')
+        memberAlreadyInGroup = true
+      }
+    }
+    // If he is not in the group, good
+    if (!memberAlreadyInGroup){
+      // 获取新组员名字.
+      state.newMember.name = payload[1].name
+      state.newMember.uid = payload[1].uid
+      // 将其push进该组，并用同样的方法获取member id
+      state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
+      // 替换掉没有id的members
+      var updates = {}
+      updates[state.newMember.id] = state.newMember
+      db.ref('/groups/' + payload[0].id + '/members').update(updates)
+    }
   },
   // 传入：组id和member id
   [DELETE_MEMBER] (state, payload) {
@@ -248,13 +270,15 @@ const mutations = {
   // when the leader button is pushed,
   // set the current cards to all the cards in the current group
   [SET_CURRENT_CARD_TO_LEADER_FORM] (state) {
-    var updates = {}
+    // put cards under all members into current cards
+    var tempCurrentCards = []
     for (var members in state.currentGroup.members){
       for (var cards in state.currentGroup.members[members].cards){
-        updates[cards] = state.currentGroup.members[members].cards[cards]
+        tempCurrentCards[tempCurrentCards.length] = state.currentGroup.members[members].cards[cards]
       }
     }
-    state.currentCards = updates
+    state.currentCards = tempCurrentCards
+    state.sortType = 3
   },
   // 传入：card.id
   // 修改current group的所属member的该卡片
@@ -262,6 +286,21 @@ const mutations = {
     var updates = {}
     updates[payload.id] = payload
     db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').update(updates)
+  },
+  [DELETE_CARD] (state, payload) {
+    db.ref('/groups/' + state.currentGroup.id + '/members/' + payload.ownerIDInGroup + '/cards').child(payload.id).remove().then(function(){
+      // 当他是leader模式时，current cards里面应该还是该group内的所有cards
+      if (state.LeaderButtonPushed){
+        var tempCurrentCards = []
+        for (var members in state.currentGroup.members){
+          for (var cards in state.currentGroup.members[members].cards){
+            tempCurrentCards[tempCurrentCards.length] = state.currentGroup.members[members].cards[cards]
+          }
+        }
+        state.currentCards = updates
+        state.sortType = 3
+      }
+    })
   },
   // Set the anti sort
   [ANTI_SORT] (state) {
@@ -273,6 +312,12 @@ const mutations = {
   },
   [CHANGE_FINISH_VISION] (state) {
     state.finishVision = !state.finishVision
+  },
+  // 打开/关闭增加/修改卡片的对话
+  // payload[0]: true/false, payload[1]: card to AddCard.vue
+  [CHANGE_ADDINGOREDITING_DIALOG] (state, payload) {
+    state.openAddingOrEditingCardDialog = payload[0]
+    state.toAddNewCardOrEditing = payload[1]
   },
   // Clear everything
   [LOG_OUT] (state) {
@@ -365,6 +410,9 @@ const actions = {
   updateCard ({ commit }, payload) {
     commit(UPDATE_CARD, payload)
   },
+  deleteCard ({ commit }, payload) {
+    commit(DELETE_CARD, payload)
+  },
   antisort ({ commit }) {
     commit(ANTI_SORT)
   },
@@ -373,6 +421,9 @@ const actions = {
   },
   changeFinishVision ({ commit }) {
     commit(CHANGE_FINISH_VISION)
+  },
+  changeAddingOrEditingDialog ({ commit }, payload) {
+    commit(CHANGE_ADDINGOREDITING_DIALOG, payload)
   },
   logout ({ commit }) {
     commit(LOG_OUT)

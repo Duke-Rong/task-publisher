@@ -2,25 +2,36 @@
 <template>
   <!-- 表示开始使用这个app -->
   <v-app light>
-    <!-- 此处放main header -->
-    <!-- 容器,里面可以包含container -->
-    <v-content>
-      <!-- 自动与页面调节大小 -->
-      <v-container
-        fluid>
-        <v-layout row >
-          <v-flex xs6>
-            <navigation/>
-          </v-flex>
-          <v-flex xs12>
-            <router-view/>
-          </v-flex>
-          <v-flex xs12>
-            <Header/>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-content>
+    <v-container fluid pa-0 v-if="user">
+      <v-layout row wrap>
+        <v-flex xs3>
+          <v-container fluid pa-0>
+              <div class="first">
+                <navigation/>
+              </div>
+          </v-container>
+        </v-flex>
+
+        <v-flex>
+          <v-container fluid pa-0>
+            <div class="second">
+              <v-layout column>
+                <v-flex>
+                  <Header/>
+              </v-flex>
+                <v-flex>
+                  <router-view/>
+                </v-flex>
+              </v-layout>
+              </div>
+          </v-container>
+        </v-flex>
+      </v-layout>
+    </v-container>
+
+    <div v-else>
+      <router-view/>
+    </div>
   </v-app>
 </template>
 
@@ -28,22 +39,39 @@
 import Navigation from '@/components/Navigation'
 import Header from '@/components/Header'
 import { groupsDB } from '@/services/firebase.conf'
+import firebase from 'firebase';
 export default {
   components: { Navigation, Header },
   name: 'App',
-    // Combine firebase with this project
+  // Combine firebase with this project
   created () {
     this.$store.dispatch('setPageRef', groupsDB)
   },
   computed: {
-    currentUser () {
-      if (this.$store.getters.getCurrentUser)
+    user() {
+      if (this.$store.getters.getCurrentUser) {
         return true
       return false
+      }
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
+    .first {
+      position: absolute;
+      width: 25%;
+      height: 100%;
+      background-color: hsl(175, 100%, 50%);
+      background-size: 100% 100%;
+    }
+    .second {
+      position: absolute;
+      width: 76%;
+      height: 100%;
+      background-image: url("assets/mainPage.jpg");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+    }
 </style>
