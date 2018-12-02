@@ -3,6 +3,8 @@ import Router from 'vue-router'
 
 const Auth = () => import(/* webpackChunkName: "Auth.vue" */'@/components/Auth.vue')
 const MainPage = () => import(/* webpackChunkName: "MainPage.vue" */'@/components/MainPage.vue')
+const Calendar = () => import(/* webpackChunkName: "Calendar.vue" */'@/components/Calendar')
+
 
 Vue.use(Router)
 
@@ -22,6 +24,15 @@ const router = new Router({
       path: '/auth',
       name: 'Welcome to Todo Cal!',
       component: Auth
+    },
+    {
+      path: '/calendar',
+      name: 'Calendar',
+      scrollToTop: true,
+      component: Calendar,
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 })

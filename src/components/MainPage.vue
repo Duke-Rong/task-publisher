@@ -44,7 +44,7 @@
       </v-layout>
     </v-container>
 
-    <!-- add card -->
+    <!-- add card dialog -->
     <v-dialog
     v-model="currentAddingCards"
     max-width="500px">

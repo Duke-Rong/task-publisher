@@ -14,7 +14,7 @@ import { READ_GROUP,
   SET_SORT_TYPE,
   ANTI_SORT,
   CHANGE_FINISH_VISION,
-  CHANGE_ADDINGOREDITING_DIALOG,
+  VIEW_CALENDAR,
   LOG_OUT,} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
@@ -56,6 +56,8 @@ const state = {
   openAddingOrEditingCardDialog: false,
   // 传到add card内的卡片
   toAddNewCardOrEditing: null,
+  // 看是否正在view calendar
+  viewCalendar: false,
   // groups
   newgroup: {
     name: '',
@@ -130,6 +132,9 @@ const getters = {
   getCardToAddCard (state) {
     return state.toAddNewCardOrEditing
   },
+  getViewCalendar (state) {
+    return state.viewCalendar
+  }
 }
 
 const mutations = {
@@ -313,11 +318,9 @@ const mutations = {
   [CHANGE_FINISH_VISION] (state) {
     state.finishVision = !state.finishVision
   },
-  // 打开/关闭增加/修改卡片的对话
-  // payload[0]: true/false, payload[1]: card to AddCard.vue
-  [CHANGE_ADDINGOREDITING_DIALOG] (state, payload) {
-    state.openAddingOrEditingCardDialog = payload[0]
-    state.toAddNewCardOrEditing = payload[1]
+  // change to/from calendar view
+  [VIEW_CALENDAR] (state) {
+    state.viewCalendar = !state.viewCalendar
   },
   // Clear everything
   [LOG_OUT] (state) {
@@ -422,8 +425,8 @@ const actions = {
   changeFinishVision ({ commit }) {
     commit(CHANGE_FINISH_VISION)
   },
-  changeAddingOrEditingDialog ({ commit }, payload) {
-    commit(CHANGE_ADDINGOREDITING_DIALOG, payload)
+  viewcalendar ({ commit }) {
+    commit(VIEW_CALENDAR)
   },
   logout ({ commit }) {
     commit(LOG_OUT)

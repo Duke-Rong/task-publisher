@@ -144,6 +144,10 @@ export default {
     currentShowingFinished() {
       return this.$store.getters.getFinish
     },
+    // 是否正在阅览calendar
+    currentViewingCalendar() {
+      return this.$store.getters.getViewCalendar
+    }
   },
   methods: {
     Leader() {
@@ -182,11 +186,19 @@ export default {
       this.$store.dispatch('changeFinishVision')
     },
     calendar() {
-      // this.$router.push('/calendar')
-    },
-    helpVision() {
-      this.help = !this.help
-    }
+      // If at main page, go to calendar
+      if (this.currentViewingCalendar){
+        this.$router.push('/calendar')
+      } else {
+        // if viewing calendar, back to main page
+        this.$router.push('/mainpage/' + this.currentMember.id)
+      }
+      // change the calendar view
+      this.$store.dispatch('viewcalendar')
+      },
+      helpVision() {
+        this.help = !this.help
+      }
   }
 }
 </script>
