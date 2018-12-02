@@ -25,7 +25,7 @@
                       <v-list-tile>
                         <v-list-tile-content v-on:click="changeGroupExtensionVisibility(groups,index)">
                           <v-list-tile-title>
-                            <h3>{{ groups.name }}</h3>
+                            <h3> &nbsp; {{ groups.name }}</h3>
                           </v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
@@ -79,12 +79,11 @@
                 <v-icon dark>add</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title v-if="!commaShown">
+                <v-list-tile-title>
                   Create a group
                 </v-list-tile-title>
-                <v-list-tile-title v-if="commaShown">
-                  Create a group,
-                </v-list-tile-title>
+                <!-- cheating attention! -->
+                <span v-if="updateThePage"></span>
               </v-list-tile-content>
             </v-list-tile>
 
@@ -589,7 +588,7 @@ export default {
       // 这玩意v-show到一个逗号，每次change groupsExtendSwitch
       // 他都会被改变值，使逗号出现/消失
       // 以此来update页面，从而触发组员的shou
-      commaShown: false,
+      updateThePage: false,
       // 当组长改动名字但又点击取消后，将这个名字还回去
       oldGroupNameBeforeChange: '',
       // 这个玩意检查在填写信息的时候是否没填
@@ -723,7 +722,7 @@ export default {
       this.resetCurrentGroup()
       // change visibility
       this.groupsExtendSwitch[payload] = !this.groupsExtendSwitch[payload]
-      this.commaShown = !this.commaShown
+      this.updateThePage = !this.updateThePage
     },
     // 重新抓取currentGroup
     // 由于groupsInDatabase是以Index来排列，不是以id排列

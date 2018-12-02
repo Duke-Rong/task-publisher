@@ -44,16 +44,118 @@
       </v-layout>
     </v-container>
 
+    <!-- add card -->
     <v-dialog
-    v-model="currentAddingCards">
+    v-model="currentAddingCards"
+    max-width="500px">
       <v-card>
-        Card name: <input type="text" v-model="newCard.name"><br>
-        Card description: <input type="text" v-model="newCard.description"><br>
-        Card due Date: <input type="text" v-model="newCard.dueDate"><br>
-        Card due time: <input type="text" v-model="newCard.dueTime"><br>
-        Card importance: <input type="text" v-model="newCard.importance"><br>
-        <button v-on:click="confirmAddingThisCard">OK</button>
-        <button v-on:click="currentAddingCards=false">Close</button>
+        <v-layout
+          column>
+          <v-flex xs12>
+            <v-card>
+              <v-layout column>
+                <v-flex xs10>
+                  <v-card-title primary-title>
+                    <v-layout column>
+                      <div class="headline">
+                        Task Title:
+                        <span v-if="refreshThePage"></span>
+                        <v-text-field  v-model="newCard.name" required clearable=""></v-text-field>
+                      </div>
+                      <br>
+                      <div class="headline">
+                        Description:
+                        <v-text-field  v-model="newCard.description" required clearable=""></v-text-field>
+                      </div>
+                      <br>
+                      <div class="headline">
+                        Due Date:
+                        <v-text-field  v-model="newCard.dueDate" required clearable=""></v-text-field>
+                      </div>
+                      <br>
+                      <div class="headline">
+                        Done by:
+                        <v-text-field  v-model="newCard.dueTime" required clearable=""></v-text-field>
+                      </div>
+                      <br>
+                      <div class="headline">
+                        Importance:
+                        <v-btn
+                          icon
+                          @click="changeImportance(1)">
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance > 0">
+                          star</v-icon>
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance < 1">
+                          star_border</v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          @click="changeImportance(2)">
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance > 1">
+                          star</v-icon>
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance < 2">
+                          star_border</v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          @click="changeImportance(3)">
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance > 2">
+                          star</v-icon>
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance < 3">
+                          star_border</v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          @click="changeImportance(4)">
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance > 3">
+                          star</v-icon>
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance < 4">
+                          star_border</v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          @click="changeImportance(5)">
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance > 4">
+                          star</v-icon>
+                          <v-icon
+                            color="red"
+                            v-if="newCard.importance < 5">
+                          star_border</v-icon>
+                        </v-btn>
+                      </div>
+                    </v-layout>
+                  </v-card-title>
+                </v-flex>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-flex/>
+                    <v-btn color="success" @click="confirmAddingThisCard">SUBMIT</v-btn>
+                    <v-btn color="error" @click="currentAddingCards=false">Close</v-btn>
+                </v-card-actions>
+              </v-layout>
+
+            </v-card>
+          </v-flex>
+        </v-layout>
       </v-card>
     </v-dialog>
 
@@ -101,7 +203,10 @@ export default {
         ownerIDInGroup: '',
         finished: false
       },
-      currentAddingCards: false
+      // open/close the adding card dialog
+      currentAddingCards: false,
+      // refresh the page
+      refreshThePage: false
     }
   },
   // 凡是和store有关的东西都在这里
@@ -159,7 +264,7 @@ export default {
   methods: {
     addCard() {
       this.clearNewCard()
-      this.currentAddingCards = !this.currentAddingCards
+      this.currentAddingCards = true
     },
     confirmAddingThisCard() {
       var toStore = []
@@ -167,10 +272,10 @@ export default {
       toStore[1] = this.currentMember
       this.$store.dispatch('addcard', toStore)
       this.addCard()
+      this.currentAddingCards = false
     },
     // Sort the cards depending on which sort user wants
     sortTheCards(cardsToBeSort) {
-      console.log(cardsToBeSort)
       const sortType = this.$store.getters.getSortType
       const antisort = this.$store.getters.getAntiSort
       // 由于不能直接对currentCards进行sort，
@@ -215,6 +320,11 @@ export default {
       }
       tempCurrentCards.sort(compare)
       return tempCurrentCards
+    },
+    // Define the importance of the new card
+    changeImportance: function(payload) {
+      this.newCard.importance = payload
+      this.refreshThePage = !this.refreshThePage
     },
     /**
      * 清除

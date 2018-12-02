@@ -14,6 +14,7 @@ import { READ_GROUP,
   SET_SORT_TYPE,
   ANTI_SORT,
   CHANGE_FINISH_VISION,
+  CHANGE_ADDINGOREDITING_DIALOG,
   LOG_OUT,} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
@@ -51,6 +52,10 @@ const state = {
   // 当finishVision关闭时，显示未完成的tasks
   // control the vision of Calendar and MainPage
   finishVision: false,
+  // 这个按钮决定了增加/修改card的开关是否打开
+  openAddingOrEditingCardDialog: false,
+  // 传到add card内的卡片
+  toAddNewCardOrEditing: null,
   // groups
   newgroup: {
     name: '',
@@ -118,6 +123,12 @@ const getters = {
   },
   getCurrentCardsAvailable (state) {
     return state.currentCardsAvailable
+  },
+  getOpenAddingOrEditingCardDialog (state) {
+    return state.openAddingOrEditingCardDialog
+  },
+  getCardToAddCard (state) {
+    return state.toAddNewCardOrEditing
   },
 }
 
@@ -302,6 +313,12 @@ const mutations = {
   [CHANGE_FINISH_VISION] (state) {
     state.finishVision = !state.finishVision
   },
+  // 打开/关闭增加/修改卡片的对话
+  // payload[0]: true/false, payload[1]: card to AddCard.vue
+  [CHANGE_ADDINGOREDITING_DIALOG] (state, payload) {
+    state.openAddingOrEditingCardDialog = payload[0]
+    state.toAddNewCardOrEditing = payload[1]
+  },
   // Clear everything
   [LOG_OUT] (state) {
     state.currentUser = '',
@@ -404,6 +421,9 @@ const actions = {
   },
   changeFinishVision ({ commit }) {
     commit(CHANGE_FINISH_VISION)
+  },
+  changeAddingOrEditingDialog ({ commit }, payload) {
+    commit(CHANGE_ADDINGOREDITING_DIALOG, payload)
   },
   logout ({ commit }) {
     commit(LOG_OUT)
