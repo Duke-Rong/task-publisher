@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar v-show="headerShown"
+  <v-toolbar
     color="black"
     dark
     clipped-left>

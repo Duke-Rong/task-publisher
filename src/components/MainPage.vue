@@ -32,7 +32,7 @@
               v-for="(cards,cardsIndex) in currentCards"
               :key="cardsIndex"
               v-show="cards.finished === currentShowingFinished">
-                <h3> {{ cards.ownerName }} </h3>
+                <h3 style="text-align:center"> {{ cards.ownerName }} </h3>
                 <br>
                 <cards v-bind:card="cards"/>
                 <br>
