@@ -1,6 +1,6 @@
 # Task-Publisher
 
-> Task Publisher is a tool for working groups, help them divide the work more clearly and efficiently. Group Leader can create a group to include the group members and assign tasks to each members so everyone knows their job clearly.
+> Task Publisher is a tool for working groups, help them divide the work more clearly and efficiently. Group Leader can create a group to include the group members and assign tasks to each member so everyone knows their job clearly.
 
 ## Build Setup
 
