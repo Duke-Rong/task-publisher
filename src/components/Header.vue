@@ -260,11 +260,6 @@
             <img src="../assets/14.png" height="500" width="800">
           </div>
           <br>
-
-
-
-
-
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
