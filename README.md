@@ -68,7 +68,7 @@ As a member, you can change your display name in the group
 
 ### How to: Quit a group
 
- Press the ![alt text](src/assets/add.png) beside your display name in the group to quit.
+ Press the ![alt text](src/assets/cancel.png) beside your display name in the group to quit.
 
 ![alt text](src/assets/7.png)
 
@@ -76,7 +76,7 @@ As a member, you can change your display name in the group
  
  ### How to: Publish tasks
 
-After you choose one member, his tasks will appear in the main frame. Press the ![alt text](src/assets/cancel.png) button under his name to add a task.
+After you choose one member, his tasks will appear in the main frame. Press the ![alt text](src/assets/add.png) button under his name to add a task.
 
 ![alt text](src/assets/8.png)
 
