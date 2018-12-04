@@ -39,6 +39,7 @@ As a group leader, you need to create a group to include your members
 ### How to: Add member / Join into a group
 
 There are two ways to include a member into your group.
+
 First one is give the group id to your member so he can join the group using the "join into a group". Group id could be found in the management page.
 
 ![alt text](src/assets/3.png)
