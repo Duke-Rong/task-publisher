@@ -76,7 +76,7 @@
               label="Confirm Password"
               type="password"
               v-model="confirmPassword"
-              :rules="PasswordNotSame && PasswordTooShort"
+              :rules="PasswordNotSame"
             ></v-text-field>
             <span class="caption grey--text text--darken-1">
               Please enter a password for your account

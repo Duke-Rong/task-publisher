@@ -325,9 +325,6 @@ const mutations = {
   [SET_SORT_TYPE] (state, payload) {
     state.sortType = payload
   },
-  [CHANGE_FINISH_VISION] (state) {
-    state.finishVision = !state.finishVision
-  },
   // change to/from calendar view
   [VIEW_CALENDAR] (state) {
     state.viewCalendar = !state.viewCalendar
@@ -368,6 +365,10 @@ const mutations = {
       ownerIDInGroup: '',
       finished: false
     }
+  },
+  // change the finish vision
+  [CHANGE_FINISH_VISION] (state) {
+    state.finishVision = !state.finishVision
   },
   ...firebaseMutations
 }

@@ -873,7 +873,9 @@ export default {
       this.currentMember = payload
       var currentToStore = []
       currentToStore[0] = this.currentGroupID
-      currentToStore[1] = payload.id
+      if (payload){
+        currentToStore[1] = payload.id
+      }
       this.$store.dispatch('setcurrent', currentToStore)
     },
     // open the profile dialog

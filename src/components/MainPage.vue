@@ -70,12 +70,12 @@
                       <br>
                       <div class="headline">
                         Due Date:
-                        <v-text-field  v-model="newCard.dueDate" required clearable=""></v-text-field>
+                        <v-text-field  v-model="newCard.dueDate" hint="format: yyyy-mm-dd" required clearable=""></v-text-field>
                       </div>
                       <br>
                       <div class="headline">
                         Done by:
-                        <v-text-field  v-model="newCard.dueTime" required clearable=""></v-text-field>
+                        <v-text-field  v-model="newCard.dueTime" hint="format: hh:mm" required clearable=""></v-text-field>
                       </div>
                       <br>
                       <div class="headline">
@@ -371,11 +371,11 @@ export default {
     width: 80%;
     left: 80px;
     top: 125px;
-    max-height: 550px;
+    max-height: 600px;
     background-color:lightgrey
   }
   .ScrollStyle  {
-    max-height: 500px;
+    max-height: 550px;
     overflow-y: scroll;
   }
 </style>
