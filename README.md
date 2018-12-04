@@ -32,7 +32,7 @@ As a group leader, you need to create a group to include your members
 
 ![alt text](src/assets/1.png)
 
-![alt text](src/assets/toc.png = 100x100) : After create a group, you will see this button beside the group. Click this button to manage your group.
+![alt text](src/assets/toc.png =100x100) : After create a group, you will see this button beside the group. Click this button to manage your group.
 
 ![alt text](src/assets/2.png)
 
