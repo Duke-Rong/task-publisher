@@ -14,7 +14,7 @@ import { READ_GROUP,
   SET_SORT_TYPE,
   ANTI_SORT,
   CHANGE_FINISH_VISION,
-  CHANGE_ADDINGOREDITING_DIALOG,
+  VIEW_CALENDAR,
   LOG_OUT,} from '@/store/mutation-types'
 import { groupsDB, db } from '@/services/firebase.conf'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
@@ -56,6 +56,8 @@ const state = {
   openAddingOrEditingCardDialog: false,
   // 传到add card内的卡片
   toAddNewCardOrEditing: null,
+  // 看是否正在view calendar
+  viewCalendar: false,
   // groups
   newgroup: {
     name: '',
@@ -130,6 +132,9 @@ const getters = {
   getCardToAddCard (state) {
     return state.toAddNewCardOrEditing
   },
+  getViewCalendar (state) {
+    return state.viewCalendar
+  }
 }
 
 const mutations = {
@@ -177,6 +182,14 @@ const mutations = {
   },
   // 输入群组，可以直接修改firebase里的该群组
   [SET_GROUP] (state, payload) {
+    // If member name has been changed, change the owner name of the card
+    for(var members in payload.members){
+      if(payload.members[members].cards){
+        for (var cards in payload.members[members].cards){
+          payload.members[members].cards[cards].ownerName = payload.members[members].name
+        }
+      }
+    }
     var updates = {}
     // 直接提取群组的ID并更新firebase里的那个群组
     // 此处这个updates[]就是所有groups, 而updates[payload.id]就是groups中那个要被改变的
@@ -242,10 +255,12 @@ const mutations = {
     db.ref('/groups/' + payload[0] + '/members').child(payload[1]).remove()
     // If the member deleting is the same as the one in cards,
     //  remove the current card
-    if(state.currentMember.id === payload[1]){
-      state.currentMember = null
-      state.currentCards = null
-      state.currentCardsAvailable = false
+    if(state.currentMember){
+      if(state.currentMember.id === payload[1]){
+        state.currentMember = null
+        state.currentCards = null
+        state.currentCardsAvailable = false
+      }
     }
   },
   // 增加卡片，格式和增加member是一样的
@@ -310,14 +325,9 @@ const mutations = {
   [SET_SORT_TYPE] (state, payload) {
     state.sortType = payload
   },
-  [CHANGE_FINISH_VISION] (state) {
-    state.finishVision = !state.finishVision
-  },
-  // 打开/关闭增加/修改卡片的对话
-  // payload[0]: true/false, payload[1]: card to AddCard.vue
-  [CHANGE_ADDINGOREDITING_DIALOG] (state, payload) {
-    state.openAddingOrEditingCardDialog = payload[0]
-    state.toAddNewCardOrEditing = payload[1]
+  // change to/from calendar view
+  [VIEW_CALENDAR] (state) {
+    state.viewCalendar = !state.viewCalendar
   },
   // Clear everything
   [LOG_OUT] (state) {
@@ -356,14 +366,10 @@ const mutations = {
       finished: false
     }
   },
-
-
-
-
-
-
-
-
+  // change the finish vision
+  [CHANGE_FINISH_VISION] (state) {
+    state.finishVision = !state.finishVision
+  },
   ...firebaseMutations
 }
 
@@ -422,8 +428,8 @@ const actions = {
   changeFinishVision ({ commit }) {
     commit(CHANGE_FINISH_VISION)
   },
-  changeAddingOrEditingDialog ({ commit }, payload) {
-    commit(CHANGE_ADDINGOREDITING_DIALOG, payload)
+  viewcalendar ({ commit }) {
+    commit(VIEW_CALENDAR)
   },
   logout ({ commit }) {
     commit(LOG_OUT)

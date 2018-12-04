@@ -72,13 +72,13 @@
                   <v-card-title primary-title>
                     <v-layout column>
                       <div class="headline">
-                        Task Title:
+                        Task Title*:
                         <span v-if="refreshThePage"></span>
                         <v-text-field  v-model="duplicatedCard.name" required clearable=""></v-text-field>
                       </div>
                       <br>
                       <div class="headline">
-                        Description:
+                        Description*:
                         <v-text-field  v-model="duplicatedCard.description" required clearable=""></v-text-field>
                       </div>
                       <br>
@@ -93,7 +93,7 @@
                       </div>
                       <br>
                       <div class="headline">
-                        Importance:
+                        Importance*:
                         <v-btn
                           icon
                           @click="changeImportance(1)">

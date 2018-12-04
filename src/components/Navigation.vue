@@ -52,6 +52,9 @@
                           <v-list-tile-title>
                             <router-link :to="'/mainpage/' + members.id" style="text-decoration:none">
                               {{ members.name }}
+                              &nbsp;
+                              <!-- Show leader button if he is the leader -->
+                              <v-icon v-if="members.uid === groups.groupLeader">person</v-icon>
                             </router-link>
                           </v-list-tile-title>
                         </v-list-tile-content>
@@ -643,9 +646,13 @@ export default {
     this.user = firebase.auth().currentUser
   },
   updated() {
-    // situation: 当打开的卡片是member a，而member a被删掉的情况下
-    // 会从cards页面里面删掉他
-    if (this.currentMember){
+    // situation: 当member产生变化，
+    // 如当打开的卡片是member a，而member a被删掉的情况下
+    // 或者member底下增加/删除了卡片
+    // 会更新current
+    if (this.currentMember === null){
+      this.setToCurrent(null)
+    } else {
       this.setToCurrent(this.currentMember)
     }
   },
@@ -805,7 +812,6 @@ export default {
         if (notFound) {
           this.GroupNotFound = true
           this.CurrentlyAddingIntoAGroup = false
-          // -LSIMkoAkqvRYi5oLo9b
         }
       })
       // 清除痕迹
@@ -867,7 +873,9 @@ export default {
       this.currentMember = payload
       var currentToStore = []
       currentToStore[0] = this.currentGroupID
-      currentToStore[1] = payload.id
+      if (payload){
+        currentToStore[1] = payload.id
+      }
       this.$store.dispatch('setcurrent', currentToStore)
     },
     // open the profile dialog
