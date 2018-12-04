@@ -66,3 +66,47 @@ As a member, you can change your display name in the group
 
 ![alt text](src/assets/6.png)
 
+### How to: Quit a group
+
+ Press the ![alt text](src/assets/cancel.png) beside your display name in the group to quit.
+
+![alt text](src/assets/7.png)
+
+ If you are the group owner, you will need to choose the new group owner.
+ 
+ ### How to: Publish tasks
+
+After you choose one member, his tasks will appear in the main frame. Press the ![alt text](src/assets/cancel.png) button under his name to add a task.
+
+![alt text](src/assets/8.png)
+
+![alt text](src/assets/9.png)
+
+A task includes title, description, importance and deadline.
+
+Also, a task could be edited (by the group owner or the member the task was assigned to), marked as finish and deleted.
+
+![alt text](src/assets/10.png)
+
+
+### Header
+
+![alt text](src/assets/add.png) : This button will appear if you are the owner of the group. Click this button and cards under every member will show up.
+
+![alt text](src/assets/12.png)
+
+Task publisher provides some functionalities to help users manage their tasks more efficiently.
+
+![alt text](src/assets/sort.png)  : user can sort their tasks by different orders: create time, importance, due date and assigned member.
+
+![alt text](src/assets/11.png)
+
+![alt text](src/assets/anti.png)  : Sort by anti order
+ 
+ ![alt text](src/assets/calendar.png)  : Task Publisher provides a calendar view for user to check the deadline in a more direct way
+
+![alt text](src/assets/13.png)
+
+ ![alt text](src/assets/finish.png)  :  : The page will show the tasks that have been marked as finished after this button is pressed
+ 
+ ![alt text](src/assets/14.png)
