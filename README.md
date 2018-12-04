@@ -1,6 +1,6 @@
 # Task-Publisher
 
-> Task Publisher
+> Task Publisher is a tool for working groups, help them divide the work more clearly and efficiently. Group Leader can create a group to include the group members and assign tasks to each members so everyone knows their job clearly.
 
 ## Build Setup
 
@@ -17,3 +17,5 @@ npm start
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
+
+## User Manual
