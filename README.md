@@ -68,7 +68,7 @@ As a member, you can change your display name in the group
 
 ### How to: Quit a group
 
- Press the ![alt text](src/assets/cancel.png) beside your display name in the group to quit.
+ Press the ![alt text](src/assets/add.png) beside your display name in the group to quit.
 
 ![alt text](src/assets/7.png)
 
@@ -91,7 +91,7 @@ Also, a task could be edited (by the group owner or the member the task was assi
 
 ### Header
 
-![alt text](src/assets/add.png) : This button will appear if you are the owner of the group. Click this button and cards under every member will show up.
+![alt text](src/assets/leader.png) : This button will appear if you are the owner of the group. Click this button and cards under every member will show up.
 
 ![alt text](src/assets/12.png)
 
