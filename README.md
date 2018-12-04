@@ -32,7 +32,7 @@ As a group leader, you need to create a group to include your members
 
 ![alt text](src/assets/1.png)
 
-: After create a group, you will see this button beside the group. Click this button to manage your group.
+<v-btn icon><v-icon>toc</v-icon></v-btn> : After create a group, you will see this button beside the group. Click this button to manage your group.
 
 ![alt text](src/assets/2.png)
 
@@ -45,7 +45,7 @@ First one is give the group id to your member so he can join the group using the
 ![alt text](src/assets/3.png)
 
 
- The other way is to use the "add member" button in the management page. In this way, you will need your member's user id.
+The other way is to use the "add member" button in the management page. In this way, you will need your member's user id.
 
 ![alt text](src/assets/4.png)
 
@@ -62,7 +62,7 @@ As a leader, you can change the name of the group in the group management page
 
 ### How to: view your profile
 
- As a member, you can change your display name in the group
+As a member, you can change your display name in the group
 
 ![alt text](src/assets/6.png)
 
