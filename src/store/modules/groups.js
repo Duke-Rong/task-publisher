@@ -48,10 +48,10 @@ const state = {
   sortType: 0,
   // 当anit-sort开启时，进行反向排序
   anti_sort: false,
-  // 当finishVision开启时，显示完成的tasks
-  // 当finishVision关闭时，显示未完成的tasks
+  // 当isTheTaskFinish开启时，显示完成的tasks
+  // 当isTheTaskFinish关闭时，显示未完成的tasks
   // control the vision of Calendar and MainPage
-  finishVision: false,
+  isTheTaskFinish: false,
   // 这个按钮决定了增加/修改card的开关是否打开
   openAddingOrEditingCardDialog: false,
   // 传到add card内的卡片
@@ -121,7 +121,7 @@ const getters = {
     return state.anti_sort
   },
   getFinish (state) {
-    return state.finishVision
+    return state.isTheTaskFinish
   },
   getCurrentCardsAvailable (state) {
     return state.currentCardsAvailable
@@ -222,6 +222,9 @@ const mutations = {
   // 输入组号，删除群组
   [DELETE_GROUP] (state, payload) {
     groupsDB.child(payload).remove()
+    if (state.currentGroup.id === payload.id){
+      state.currentGroup = null
+    }
     state.currentMember = null
     state.currentCards = null
     state.currentCardsAvailable = false
@@ -240,7 +243,13 @@ const mutations = {
     // If he is not in the group, good
     if (!memberAlreadyInGroup){
       // 获取新组员名字.
-      state.newMember.name = payload[1].name
+      if (payload[1].name) {
+        state.newMember.name = payload[1].name
+      } else if (payload[1].displayName) {
+        state.newMember.name = payload[1].displayName
+      } else {
+        state.newMember.name = payload[1].email
+      }
       state.newMember.uid = payload[1].uid
       // 将其push进该组，并用同样的方法获取member id
       state.newMember.id = db.ref('/groups/' + payload[0].id + '/members').push(state.newMember).key
@@ -328,6 +337,12 @@ const mutations = {
   // change to/from calendar view
   [VIEW_CALENDAR] (state) {
     state.viewCalendar = !state.viewCalendar
+    console.log('state.viewCalendar' + state.viewCalendar)
+  },
+  // change the finish vision
+  [CHANGE_FINISH_VISION] (state) {
+    state.isTheTaskFinish = !state.isTheTaskFinish
+    console.log('state.isTheTaskFinish' + state.isTheTaskFinish)
   },
   // Clear everything
   [LOG_OUT] (state) {
@@ -339,7 +354,7 @@ const mutations = {
     state.LeaderButtonPushed = false,
     state.sortType = 0,
     state.anti_sort = false,
-    state.finishVision = false,
+    state.isTheTaskFinish = false,
     state.newgroup = {
       name: '',
       id: '',
@@ -366,10 +381,11 @@ const mutations = {
       finished: false
     }
   },
-  // change the finish vision
-  [CHANGE_FINISH_VISION] (state) {
-    state.finishVision = !state.finishVision
-  },
+
+
+
+
+
   ...firebaseMutations
 }
 
@@ -425,11 +441,11 @@ const actions = {
   setSortType ({ commit }, payload) {
     commit(SET_SORT_TYPE, payload)
   },
-  changeFinishVision ({ commit }) {
-    commit(CHANGE_FINISH_VISION)
-  },
   viewcalendar ({ commit }) {
     commit(VIEW_CALENDAR)
+  },
+  changeisTheTaskFinish ({ commit }) {
+    commit(CHANGE_FINISH_VISION)
   },
   logout ({ commit }) {
     commit(LOG_OUT)

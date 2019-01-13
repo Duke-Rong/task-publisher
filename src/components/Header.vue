@@ -363,23 +363,27 @@ export default {
     antisort() {
       this.$store.dispatch('antisort')
     },
-    finish() {
-      this.$store.dispatch('changeFinishVision')
-    },
     calendar() {
       // If at main page, go to calendar
-      if (this.currentViewingCalendar){
+      if (!this.currentViewingCalendar){
         this.$router.push('/calendar')
       } else {
         // if viewing calendar, back to main page
         this.$router.push('/mainpage/' + this.currentMember.id)
       }
       // change the calendar view
+      console.log('calendar')
       this.$store.dispatch('viewcalendar')
-      },
-      helpVision() {
-        this.help = !this.help
-      }
+      console.log('calendar2')
+    },
+    finish() {
+      console.log('finish')
+      this.$store.dispatch('changeisTheTaskFinish')
+      console.log('finish2')
+    },
+    helpVision() {
+      this.help = !this.help
+    }
   }
 }
 </script>
