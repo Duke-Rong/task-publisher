@@ -40,19 +40,21 @@
         </v-flex>
         <v-spacer></v-spacer>
 
-        <v-card-actions v-show="card.ownerUid === currentUser || currentGroup.groupLeader === currentUser">
+        <v-card-actions>
             <v-btn icon @click="cardDetails = !cardDetails">
                 <v-icon>{{ cardDetails ? 'keyboard_arrow_up' : 'reorder' }}</v-icon>
             </v-btn>
-            <v-btn icon @click="openEditingDialog()">
-              <v-icon>edit</v-icon>
-            </v-btn>
-            <v-btn icon @click="finish()">
-              <v-icon>{{ card.finished ? 'settings_backup_restore' : 'thumb_up'}}</v-icon>
-            </v-btn>
-            <v-btn icon @click="Delete()">
-              <v-icon>delete</v-icon>
-            </v-btn>
+            <div v-show="card.ownerUid === currentUser || currentGroup.groupLeader === currentUser">
+              <v-btn icon @click="openEditingDialog()">
+                <v-icon>edit</v-icon>
+              </v-btn>
+              <v-btn icon @click="finish()">
+                <v-icon>{{ card.finished ? 'settings_backup_restore' : 'thumb_up'}}</v-icon>
+              </v-btn>
+              <v-btn icon @click="Delete()">
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </div>
           </v-card-actions>
 
       </v-layout>
