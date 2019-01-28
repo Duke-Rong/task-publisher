@@ -16,9 +16,10 @@
               <v-divider></v-divider>
                 <!-- 此处进行筛选 -->
                 <!-- 由于每一个group里相同的member只有一个，因此每次组只会显示一次 -->
-                <div v-for="(members,indxxx) in groups.members" :key="indxxx" v-if="members.uid === user.uid">
+                <div v-for="(members,indxxx) in groups.members"
+                :key="indxxx" >
 
-                  <v-list subheader>
+                  <v-list subheader v-if="members.uid === user.uid">
                     <!-- 展示组名 -->
                     <!-- 平时show h3 -->
                     <div v-if="!groupsExtendSwitch[index]">
@@ -197,9 +198,9 @@
       <v-card-text>
         <v-radio-group v-model="newLeader">
           <div v-for="(members,membersShownInManageTheGroup) in currentGroup.members"
-          :key="membersShownInManageTheGroup"
-          v-if="members.uid !== currentGroup.groupLeader">
-            <v-radio :label="members.name" :value="members"></v-radio>
+          :key="membersShownInManageTheGroup">
+            <v-radio :label="members.name" :value="members"
+            v-if="members.uid !== currentGroup.groupLeader"></v-radio>
           </div>
         </v-radio-group>
       </v-card-text>
