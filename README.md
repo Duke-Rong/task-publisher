@@ -2,7 +2,9 @@
 
 > Task Publisher is a tool for working groups, help them divide the work more clearly and efficiently. Group Leader can create a group to include the group members and assign tasks to each member so everyone knows their job clearly.
 
+
 > Published at: https://task-publisher.com
+
 
 ## Build Setup
 
@@ -78,7 +80,7 @@ As a member, you can change your display name in the group
  
  ### How to: Publish tasks
 
-After you choose one member, his tasks will appear in the main frame. Press the ![alt text](src/assets/cancel.png) button under his name to add a task.
+After you choose one member, his tasks will appear in the main frame. Press the ![alt text](src/assets/add.png) button under his name to add a task.
 
 ![alt text](src/assets/8.png)
 
@@ -93,7 +95,7 @@ Also, a task could be edited (by the group owner or the member the task was assi
 
 ### Header
 
-![alt text](src/assets/add.png) : This button will appear if you are the owner of the group. Click this button and cards under every member will show up.
+![alt text](src/assets/leader.png) : This button will appear if you are the owner of the group. Click this button and cards under every member will show up.
 
 ![alt text](src/assets/12.png)
 
