@@ -4,32 +4,45 @@
       fluid
       class="homeBox"
       style="text-align:center">
-      <div class="inputbox">
-        <div>
-          Email:
-          <input
-            type="text"
-            style="border:none; border-bottom:black solid 1px; width:300px;"
-            v-model="email">
-        </div>
+      <v-container class="abc">
         <br>
-        <div>
-          Password:
-          <input
-            type="password"
-            style="border:none; border-bottom:black solid 1px; width:300px"
-            v-model="password">
-        </div>
+        <h3 style="font-size:30px">Welcome to Task Publisher</h3>
         <br>
-        <v-btn
-          color="success"
-          @click="SignInUser()">
-        Sign-in</v-btn>
-        <v-btn
-          color="info"
-          @click="RegisterDialog=true">
-        Register</v-btn>
-      </div>
+        <br>
+        <v-card flat>
+          <v-layout column>
+            <v-flex>
+              <v-text-field
+              label="Email Address"
+              outline
+              v-model="email"
+              ></v-text-field>
+            </v-flex>
+            <v-flex>
+              <v-text-field
+                label="Password"
+                outline
+                type="password"
+              v-model="password"
+              ></v-text-field>
+            </v-flex>
+            <v-card-actions>
+            <v-flex>
+              <v-btn large
+                color="success"
+                @click="SignInUser()">
+              Log in</v-btn>
+            </v-flex>
+            <v-flex>
+              <v-btn large
+                color="info"
+                @click="RegisterDialog=true">
+              Sign Up</v-btn>
+            </v-flex>
+            </v-card-actions>
+          </v-layout>
+        </v-card>
+      </v-container>
     </v-container>
 
     <!-- 当register时显示的对话框 -->
@@ -217,5 +230,13 @@ export default {
         width: 100%;
         height: 100%;
         top: 250px;
+    }
+    .abc {
+        position: absolute;
+        left: 25%;
+        top: 18%;
+        height: 420px;
+        width: 700px;
+        background-color:white
     }
 </style>
